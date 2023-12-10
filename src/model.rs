@@ -85,11 +85,20 @@ pub struct CreateMoneyTransactionModel {
 #[allow(non_snake_case)]
 pub struct BeerModel {
     pub id: Uuid,
-    pub title: Uuid,
+    pub title: String,
     pub description: String,
+    pub thumbnail: String,
     pub cost: i64,
     #[serde(rename = "createdAt")]
     pub created_at: Option<i64>,
     #[serde(rename = "updatedAt")]
     pub updated_at: Option<i64>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct CreateBeerModel {
+    pub title: String,
+    pub thumbnail: String,
+    pub description: String,
+    pub cost: i64,
 }

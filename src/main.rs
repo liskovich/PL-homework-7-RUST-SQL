@@ -3,6 +3,7 @@ mod handler;
 mod model;
 mod repo;
 mod schema;
+mod helper;
 
 use dotenv::dotenv;
 
@@ -10,6 +11,8 @@ use repo::{
     beer_repo::BeerRepo, generic::Repo, platform_repo::OilPlaftormRepo,
     transactions_repo::TransactionsRepo,
 };
+
+use helper::seed_game_entities;
 
 use sqlx::{postgres::PgPoolOptions, PgPool};
 
@@ -70,7 +73,9 @@ async fn main() -> Result<(), rocket::Error> {
         }
     }
 
+    // setup services and run server
     let repositories = initialize_repositories(&pool).await;
+    seed_game_entities(&pool).await;
 
     // TODO: adjust for production
     let cors = CorsOptions::default()
