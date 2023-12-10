@@ -6,7 +6,10 @@ mod schema;
 
 use dotenv::dotenv;
 
-use repo::{beer_repo::BeerRepo, generic::Repo, platform_repo::OilPlaftormRepo};
+use repo::{
+    beer_repo::BeerRepo, generic::Repo, platform_repo::OilPlaftormRepo,
+    transactions_repo::TransactionsRepo,
+};
 
 use sqlx::{postgres::PgPoolOptions, PgPool};
 
@@ -22,14 +25,17 @@ use handler::platform_handler::{
 struct AppRepositories {
     platform_repo: OilPlaftormRepo,
     beer_repo: BeerRepo,
+    finances_repo: TransactionsRepo,
 }
 
 async fn initialize_repositories(pool: &PgPool) -> AppRepositories {
     let platform_repo = OilPlaftormRepo::new(pool.clone());
     let beer_repo = BeerRepo::new(pool.clone());
+    let finances_repo = TransactionsRepo::new(pool.clone());
     AppRepositories {
         platform_repo,
         beer_repo,
+        finances_repo,
     }
 }
 

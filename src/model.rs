@@ -14,7 +14,14 @@ pub struct OilPlatformModel {
     pub updated_at: Option<i64>,
 }
 
-#[derive(Clone, PartialEq, PartialOrd, Debug, Deserialize, Serialize, sqlx::Type)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[allow(non_snake_case)]
+pub struct CreatePlatformModel {
+    pub platform_type: PlatformType,
+    pub profitability: i64,
+}
+
+#[derive(Clone, Copy, PartialEq, PartialOrd, Debug, Deserialize, Serialize, sqlx::Type)]
 #[sqlx(type_name = "platform_type", rename_all = "lowercase")]
 pub enum PlatformType {
     Rig,
@@ -68,6 +75,7 @@ pub struct MoneyTransactionModel {
     pub id: Uuid,
     pub item_id: Uuid,
     pub amount: i64,
+    pub reduces_balance: bool,
     #[serde(rename = "createdAt")]
     pub created_at: Option<i64>,
     #[serde(rename = "updatedAt")]

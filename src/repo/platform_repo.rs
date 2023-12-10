@@ -4,8 +4,9 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::constants::MAX_PLATFORM_LEVEL;
+use crate::model::CreatePlatformModel;
 use crate::model::OilPlatformModel;
-use crate::schema::{CreatePlatformSchema, UpdatePlatformSchema};
+use crate::schema::UpdatePlatformSchema;
 
 use super::generic::Repo;
 
@@ -35,7 +36,7 @@ pub struct OilPlaftormRepo {
 }
 
 #[async_trait]
-impl Repo<OilPlatformModel, CreatePlatformSchema, UpdatePlatformSchema> for OilPlaftormRepo {
+impl Repo<OilPlatformModel, CreatePlatformModel, UpdatePlatformSchema> for OilPlaftormRepo {
     type Error = OilPlatformError;
     type Pool = PgPool;
 
@@ -79,12 +80,13 @@ impl Repo<OilPlatformModel, CreatePlatformSchema, UpdatePlatformSchema> for OilP
 
     async fn create(
         &self,
-        item: CreatePlatformSchema,
+        item: CreatePlatformModel,
     ) -> Result<OilPlatformModel, OilPlatformError> {
         let query_result = match sqlx::query_as!(
             OilPlatformModel,
-            "INSERT INTO oil_platforms (platform_type) VALUES ($1) RETURNING *",
+            "INSERT INTO oil_platforms (platform_type, profitability) VALUES ($1, $2) RETURNING *",
             item.platform_type.to_string(),
+            item.profitability,
         )
         .fetch_one(&self.pool)
         .await
