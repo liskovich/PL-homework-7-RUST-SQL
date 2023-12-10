@@ -1,19 +1,37 @@
 mod constants;
+mod handler;
 mod model;
+mod repo;
 mod schema;
 
 use dotenv::dotenv;
 
-use sqlx::postgres::PgPoolOptions;
+use repo::{beer_repo::BeerRepo, generic::Repo, platform_repo::OilPlaftormRepo};
 
-mod repo;
-use repo::{generic::Repo, platform_repo::OilPlaftormRepo};
+use sqlx::{postgres::PgPoolOptions, PgPool};
 
 #[macro_use]
 extern crate rocket;
 use rocket::http::Method;
-use rocket::tokio::time::{sleep, Duration};
 use rocket_cors::{AllowedOrigins, CorsOptions};
+
+use handler::platform_handler::{
+    create_todo_handler, health_checker_handler, platforms_list_handler,
+};
+
+struct AppRepositories {
+    platform_repo: OilPlaftormRepo,
+    beer_repo: BeerRepo,
+}
+
+async fn initialize_repositories(pool: &PgPool) -> AppRepositories {
+    let platform_repo = OilPlaftormRepo::new(pool.clone());
+    let beer_repo = BeerRepo::new(pool.clone());
+    AppRepositories {
+        platform_repo,
+        beer_repo,
+    }
+}
 
 #[rocket::main]
 async fn main() -> Result<(), rocket::Error> {
@@ -46,11 +64,7 @@ async fn main() -> Result<(), rocket::Error> {
         }
     }
 
-    // initialize repos
-    let oil_platform_repo = OilPlaftormRepo::new(pool.clone());
-
-    let all_platforms = oil_platform_repo.get_all().await;
-    println!("{:?}", all_platforms);
+    let repositories = initialize_repositories(&pool).await;
 
     // TODO: adjust for production
     let cors = CorsOptions::default()
@@ -64,17 +78,19 @@ async fn main() -> Result<(), rocket::Error> {
         .allow_credentials(true);
 
     let _rocket = rocket::build()
-        .mount("/hello", routes![index])
+        .manage(repositories)
+        .mount(
+            "/api",
+            routes![
+                health_checker_handler,
+                platforms_list_handler,
+                create_todo_handler
+            ],
+        )
         .attach(cors.to_cors().unwrap())
         .launch()
         .await
         .expect("Failed to start server");
 
     Ok(())
-}
-
-#[get("/")]
-async fn index() -> &'static str {
-    sleep(Duration::from_secs(3)).await;
-    "Hello, world!"
 }

@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
+#[derive(Debug, Deserialize, Serialize, Clone, sqlx::FromRow)]
 #[allow(non_snake_case)]
 pub struct OilPlatformModel {
     pub id: Uuid,
@@ -49,7 +49,7 @@ impl ToString for PlatformType {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
+#[derive(Debug, Deserialize, Serialize, Clone, sqlx::FromRow)]
 #[allow(non_snake_case)]
 pub struct OilPlatformUpgradeModel {
     pub id: Uuid,
@@ -62,7 +62,7 @@ pub struct OilPlatformUpgradeModel {
     pub updated_at: Option<i64>,
 }
 
-#[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
+#[derive(Debug, Deserialize, Serialize, Clone, sqlx::FromRow)]
 #[allow(non_snake_case)]
 pub struct MoneyTransactionModel {
     pub id: Uuid,
@@ -74,7 +74,7 @@ pub struct MoneyTransactionModel {
     pub updated_at: Option<i64>,
 }
 
-#[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
+#[derive(Debug, Deserialize, Serialize, Clone, sqlx::FromRow)]
 #[allow(non_snake_case)]
 pub struct BeerModel {
     pub id: Uuid,

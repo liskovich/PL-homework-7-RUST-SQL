@@ -77,7 +77,10 @@ impl Repo<OilPlatformModel, CreatePlatformSchema, UpdatePlatformSchema> for OilP
         Ok(query_result)
     }
 
-    async fn create(&mut self, item: CreatePlatformSchema) -> Result<(), OilPlatformError> {
+    async fn create(
+        &self,
+        item: CreatePlatformSchema,
+    ) -> Result<OilPlatformModel, OilPlatformError> {
         let query_result = match sqlx::query_as!(
             OilPlatformModel,
             "INSERT INTO oil_platforms (platform_type) VALUES ($1) RETURNING *",
@@ -86,7 +89,7 @@ impl Repo<OilPlatformModel, CreatePlatformSchema, UpdatePlatformSchema> for OilP
         .fetch_one(&self.pool)
         .await
         {
-            Ok(_) => (),
+            Ok(platform) => platform,
             Err(_) => return Err(OilPlatformError::OtherError),
         };
 
@@ -94,7 +97,7 @@ impl Repo<OilPlatformModel, CreatePlatformSchema, UpdatePlatformSchema> for OilP
     }
 
     async fn update(
-        &mut self,
+        &self,
         id: Uuid,
         new_item: UpdatePlatformSchema,
     ) -> Result<OilPlatformModel, OilPlatformError> {

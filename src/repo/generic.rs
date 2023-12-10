@@ -11,6 +11,6 @@ pub trait Repo<ReturnType, CreateType, UpdateType> {
 
     async fn get_by_id(&self, id: Uuid) -> Result<ReturnType, Self::Error>;
     async fn get_all(&self) -> Result<Vec<ReturnType>, Self::Error>;
-    async fn create(&mut self, item: CreateType) -> Result<(), Self::Error>;
-    async fn update(&mut self, id: Uuid, new_item: UpdateType) -> Result<ReturnType, Self::Error>;
+    async fn create(&self, item: CreateType) -> Result<ReturnType, Self::Error>;
+    async fn update(&self, id: Uuid, new_item: UpdateType) -> Result<ReturnType, Self::Error>;
 }
