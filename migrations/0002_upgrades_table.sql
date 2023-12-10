@@ -1,6 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TABLE oil_platforms_upgrades (
+CREATE TABLE IF NOT EXISTS oil_platforms_upgrades (
     id UUID PRIMARY KEY NOT NULL DEFAULT (uuid_generate_v4()),
     platform_id UUID NOT NULL,
     new_platform_level SMALLINT NOT NULL,

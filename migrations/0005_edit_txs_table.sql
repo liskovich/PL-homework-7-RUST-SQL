@@ -1,9 +1,12 @@
+DROP TABLE IF EXISTS money_transactions;
+
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS money_transactions (
     id UUID PRIMARY KEY NOT NULL DEFAULT (uuid_generate_v4()),
     item_id UUID NOT NULL,
     amount BIGINT NOT NULL,
+    reduces_balance BOOLEAN NOT NULL,
     created_at BIGINT DEFAULT CAST(EXTRACT(EPOCH FROM NOW()) AS INTEGER),
     updated_at BIGINT DEFAULT CAST(EXTRACT(EPOCH FROM NOW()) AS INTEGER)
 );

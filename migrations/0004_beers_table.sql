@@ -1,6 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TABLE beers (
+CREATE TABLE IF NOT EXISTS beers (
     id UUID PRIMARY KEY NOT NULL DEFAULT (uuid_generate_v4()),
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
