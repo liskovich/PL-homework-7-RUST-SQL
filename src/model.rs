@@ -21,6 +21,11 @@ pub struct CreatePlatformModel {
     pub profitability: i64,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct UpdatePlatformModel {
+    pub profitability_addition: i64,
+}
+
 #[derive(Clone, Copy, PartialEq, PartialOrd, Debug, Deserialize, Serialize, sqlx::Type)]
 #[sqlx(type_name = "platform_type", rename_all = "lowercase")]
 pub enum PlatformType {
@@ -58,19 +63,6 @@ impl ToString for PlatformType {
 
 #[derive(Debug, Deserialize, Serialize, Clone, sqlx::FromRow)]
 #[allow(non_snake_case)]
-pub struct OilPlatformUpgradeModel {
-    pub id: Uuid,
-    pub platform_id: Uuid,
-    pub new_platform_level: i16,
-    pub profitability_addition: i64,
-    #[serde(rename = "createdAt")]
-    pub created_at: Option<i64>,
-    #[serde(rename = "updatedAt")]
-    pub updated_at: Option<i64>,
-}
-
-#[derive(Debug, Deserialize, Serialize, Clone, sqlx::FromRow)]
-#[allow(non_snake_case)]
 pub struct MoneyTransactionModel {
     pub id: Uuid,
     pub item_id: Uuid,
@@ -80,6 +72,13 @@ pub struct MoneyTransactionModel {
     pub created_at: Option<i64>,
     #[serde(rename = "updatedAt")]
     pub updated_at: Option<i64>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct CreateMoneyTransactionModel {
+    pub item_id: Option<Uuid>,
+    pub amount: i64,
+    pub reduces_balance: bool,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, sqlx::FromRow)]

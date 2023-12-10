@@ -4,9 +4,7 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::constants::MAX_PLATFORM_LEVEL;
-use crate::model::CreatePlatformModel;
-use crate::model::OilPlatformModel;
-use crate::schema::UpdatePlatformSchema;
+use crate::model::{CreatePlatformModel, OilPlatformModel, UpdatePlatformModel};
 
 use super::generic::Repo;
 
@@ -36,7 +34,7 @@ pub struct OilPlaftormRepo {
 }
 
 #[async_trait]
-impl Repo<OilPlatformModel, CreatePlatformModel, UpdatePlatformSchema> for OilPlaftormRepo {
+impl Repo<OilPlatformModel, CreatePlatformModel, UpdatePlatformModel> for OilPlaftormRepo {
     type Error = OilPlatformError;
     type Pool = PgPool;
 
@@ -101,7 +99,7 @@ impl Repo<OilPlatformModel, CreatePlatformModel, UpdatePlatformSchema> for OilPl
     async fn update(
         &self,
         id: Uuid,
-        new_item: UpdatePlatformSchema,
+        new_item: UpdatePlatformModel,
     ) -> Result<OilPlatformModel, OilPlatformError> {
         let query_result = match sqlx::query_as!(
             OilPlatformModel,
@@ -123,8 +121,8 @@ impl Repo<OilPlatformModel, CreatePlatformModel, UpdatePlatformSchema> for OilPl
         let query_result = match sqlx::query_as!(
             OilPlatformModel,
             "UPDATE oil_platforms SET platform_level = $1, profitability = $2, updated_at = $3 WHERE id = $4 RETURNING *",
-            new_item.new_platform_level.to_owned(),
-            new_item.new_profitability.to_owned(),
+            query_result.platform_level + 1,
+            new_item.profitability_addition,
             chrono::Utc::now().timestamp(),
             id
         )

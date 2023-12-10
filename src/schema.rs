@@ -13,17 +13,7 @@ pub struct CreatePlatformSchema {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct UpdatePlatformSchema {
-    pub new_platform_level: i16,
-    pub new_profitability: i64,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct CreatePlatformUpgradeSchema {
-    pub platform_id: String,
-    pub new_platform_level: i16,
-    pub profitability_addition: i64,
-}
+pub struct CreatePlatformUpgradeSchema;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct CreateMoneyTransactionSchema {
@@ -32,16 +22,7 @@ pub struct CreateMoneyTransactionSchema {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct CreateBeerSchema {
-    pub title: String,
-    pub description: String,
-    pub cost: i64,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct UpdateBeerSchema {
-    pub cost: i64,
-}
+pub struct PurchaseBeerSchema;
 
 // responses
 #[derive(Serialize, Deserialize, Debug, Clone)]

@@ -1,12 +1,7 @@
-use async_trait::async_trait;
 use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::model::BeerModel;
-use crate::schema::CreateBeerSchema;
-use crate::schema::UpdateBeerSchema;
-
-use super::generic::Repo;
 
 #[derive(Debug)]
 pub enum BeerError {
@@ -33,32 +28,20 @@ pub struct BeerRepo {
     pool: PgPool,
 }
 
-#[async_trait]
-impl Repo<BeerModel, CreateBeerSchema, UpdateBeerSchema> for BeerRepo {
-    type Error = BeerError;
-    type Pool = PgPool;
-
-    fn new(pool: Self::Pool) -> Self {
+impl BeerRepo {
+    pub fn new(pool: PgPool) -> Self {
         BeerRepo { pool }
     }
 
-    fn get_pool(&self) -> Self::Pool {
-        self.pool.clone()
-    }
-
-    async fn get_by_id(&self, id: Uuid) -> Result<BeerModel, BeerError> {
+    pub async fn get_by_id(&self, id: Uuid) -> Result<BeerModel, BeerError> {
         todo!()
     }
 
-    async fn get_all(&self) -> Result<Vec<BeerModel>, BeerError> {
+    pub async fn get_all(&self) -> Result<Vec<BeerModel>, BeerError> {
         todo!()
     }
 
-    async fn create(&self, item: CreateBeerSchema) -> Result<BeerModel, BeerError> {
-        todo!()
-    }
-
-    async fn update(&self, id: Uuid, new_item: UpdateBeerSchema) -> Result<BeerModel, BeerError> {
+    pub async fn purchase(&self, id: Uuid) -> Result<BeerModel, BeerError> {
         todo!()
     }
 }
