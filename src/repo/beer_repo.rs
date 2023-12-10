@@ -58,11 +58,7 @@ impl Repo<BeerModel, CreateBeerSchema, UpdateBeerSchema> for BeerRepo {
         todo!()
     }
 
-    async fn update(
-        &self,
-        id: Uuid,
-        new_item: UpdateBeerSchema,
-    ) -> Result<BeerModel, BeerError> {
+    async fn update(&self, id: Uuid, new_item: UpdateBeerSchema) -> Result<BeerModel, BeerError> {
         todo!()
     }
 }
