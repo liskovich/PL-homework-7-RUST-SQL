@@ -31,9 +31,12 @@ use handler::{
     },
 };
 
-use ui_handler::platform_handler::{
-    create_platform_ui_handler, get_create_platform_ui_handler, get_upgrade_platform_ui_handler,
-    index_handler, upgrade_platform_ui_handler,
+use ui_handler::{
+    beer_handler::{beers_handler, get_purchase_beer_ui_handler, purchase_beer_ui_handler},
+    platform_handler::{
+        create_platform_ui_handler, get_create_platform_ui_handler,
+        get_upgrade_platform_ui_handler, index_handler, upgrade_platform_ui_handler,
+    },
 };
 
 use game_loop::game_earnings_stream;
@@ -123,6 +126,9 @@ async fn main() -> Result<(), rocket::Error> {
                 create_platform_ui_handler,
                 get_upgrade_platform_ui_handler,
                 upgrade_platform_ui_handler,
+                beers_handler,
+                get_purchase_beer_ui_handler,
+                purchase_beer_ui_handler,
             ],
         )
         .attach(cors.to_cors().unwrap())

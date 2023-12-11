@@ -1,6 +1,5 @@
 use crate::model::{BeerModel, OilPlatformModel};
 use serde::{Deserialize, Serialize};
-// use rocket::form::Strict;
 
 // requests
 #[derive(Deserialize, Debug, Clone)]
@@ -12,11 +11,6 @@ pub struct ParamOptions {
 pub struct CreatePlatformSchema {
     pub platform_type: String,
 }
-
-// #[derive(FromForm)]
-// pub struct CreatePlatformForm {
-//     pub platform_type: Strict<String>,
-// }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct CreatePlatformUpgradeSchema;
