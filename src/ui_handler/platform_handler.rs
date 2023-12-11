@@ -36,7 +36,7 @@ pub async fn index_handler(data: &State<AppRepositories>) -> Template {
 #[get("/platforms/create")]
 pub async fn get_create_platform_ui_handler() -> Template {
     // TODO: pass info about available money balance
-    
+
     Template::render("tera/create_platform", context! {})
 }
 
