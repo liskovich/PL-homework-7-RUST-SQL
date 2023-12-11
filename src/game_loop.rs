@@ -15,8 +15,8 @@ struct BalanceData {
     just_earned: i64,
 }
 
-#[get("/echo")]
-pub fn echo_stream(ws: WebSocket) -> Channel<'static> {
+#[get("/game-state")]
+pub fn game_earnings_stream(ws: WebSocket) -> Channel<'static> {
     use rocket::futures::SinkExt;
 
     let (data_sender, mut data_receiver) = mpsc::channel(100);

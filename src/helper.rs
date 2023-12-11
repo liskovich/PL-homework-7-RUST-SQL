@@ -1,4 +1,11 @@
-use crate::model::{BeerModel, CreateBeerModel, MoneyTransactionModel, OilPlatformModel};
+use crate::{
+    constants::{
+        GROUND_PLATFORM_COST, GROUND_PLATFORM_PROFITABILITY, GROUND_PLATFORM_UPGRADE_COST,
+        PUMP_PLATFORM_COST, PUMP_PLATFORM_PROFITABILITY, PUMP_PLATFORM_UPGRADE_COST,
+        RIG_PLATFORM_COST, RIG_PLATFORM_PROFITABILITY, RIG_PLATFORM_UPGRADE_COST,
+    },
+    model::{BeerModel, CreateBeerModel, MoneyTransactionModel, OilPlatformModel, PlatformType},
+};
 use sqlx::{Error as SqlxError, PgPool};
 use uuid::Uuid;
 
@@ -158,5 +165,30 @@ pub async fn seed_game_entities(pool: &PgPool) {
             Ok(_) => (),
             Err(_) => (),
         };
+    }
+}
+
+// oil platform helpers
+pub fn get_platform_cost(platform: PlatformType) -> i64 {
+    match platform {
+        PlatformType::Rig => RIG_PLATFORM_COST,
+        PlatformType::Ground => GROUND_PLATFORM_COST,
+        PlatformType::Pump => PUMP_PLATFORM_COST,
+    }
+}
+
+pub fn get_platform_upgrade_cost(platform: PlatformType) -> i64 {
+    match platform {
+        PlatformType::Rig => RIG_PLATFORM_UPGRADE_COST,
+        PlatformType::Ground => GROUND_PLATFORM_UPGRADE_COST,
+        PlatformType::Pump => PUMP_PLATFORM_UPGRADE_COST,
+    }
+}
+
+pub fn get_platform_profitability(platform: PlatformType) -> i64 {
+    match platform {
+        PlatformType::Rig => RIG_PLATFORM_PROFITABILITY,
+        PlatformType::Ground => GROUND_PLATFORM_PROFITABILITY,
+        PlatformType::Pump => PUMP_PLATFORM_PROFITABILITY,
     }
 }
