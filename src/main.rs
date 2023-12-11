@@ -5,6 +5,7 @@ mod helper;
 mod model;
 mod repo;
 mod schema;
+mod ui_handler;
 
 use dotenv::dotenv;
 
@@ -30,7 +31,12 @@ use handler::{
     },
 };
 
-use game_loop::echo_stream;
+use ui_handler::platform_handler::{
+    create_platform_ui_handler, get_create_platform_ui_handler, get_upgrade_platform_ui_handler,
+    index_handler, upgrade_platform_ui_handler,
+};
+
+use game_loop::game_earnings_stream;
 
 struct AppRepositories {
     platform_repo: OilPlaftormRepo,
@@ -106,7 +112,17 @@ async fn main() -> Result<(), rocket::Error> {
                 edit_platform_handler,
                 beers_list_handler,
                 purchase_beer_handler,
-                echo_stream,
+            ],
+        )
+        .mount(
+            "/",
+            routes![
+                game_earnings_stream,
+                index_handler,
+                get_create_platform_ui_handler,
+                create_platform_ui_handler,
+                get_upgrade_platform_ui_handler,
+                upgrade_platform_ui_handler,
             ],
         )
         .attach(cors.to_cors().unwrap())
