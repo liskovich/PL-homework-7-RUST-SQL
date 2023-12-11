@@ -1,7 +1,9 @@
-use crate::model::{BeerModel, CreateBeerModel};
+use crate::model::{BeerModel, CreateBeerModel, MoneyTransactionModel, OilPlatformModel};
 use sqlx::{Error as SqlxError, PgPool};
+use uuid::Uuid;
 
 pub async fn seed_game_entities(pool: &PgPool) {
+    // seed beers table
     let beer_table_epmty = match sqlx::query_as!(BeerModel, "SELECT * FROM beers")
         .fetch_all(pool)
         .await
@@ -85,5 +87,76 @@ pub async fn seed_game_entities(pool: &PgPool) {
                 Err(_) => (),
             };
         }
+    }
+
+    // seed platforms table
+    let platform_table_epmty =
+        match sqlx::query_as!(OilPlatformModel, "SELECT * FROM oil_platforms")
+            .fetch_all(pool)
+            .await
+        {
+            Ok(platforms) => {
+                if platforms.len() > 0 {
+                    false
+                } else {
+                    true
+                }
+            }
+            Err(SqlxError::RowNotFound) => true,
+            Err(_) => false,
+        };
+
+    println!("Platform table is empty: {}", platform_table_epmty);
+
+    if platform_table_epmty {
+        println!("Seeding platform table!");
+        match sqlx::query_as!(
+            OilPlatformModel,
+            "INSERT INTO oil_platforms (platform_type, profitability) VALUES ($1, $2) RETURNING *",
+            "Rig",
+            5,
+        )
+        .fetch_one(pool)
+        .await
+        {
+            Ok(_) => (),
+            Err(_) => (),
+        };
+    }
+
+    // seed transactions table
+    let transactions_table_epmty =
+        match sqlx::query_as!(MoneyTransactionModel, "SELECT * FROM money_transactions")
+            .fetch_all(pool)
+            .await
+        {
+            Ok(txs) => {
+                if txs.len() > 0 {
+                    false
+                } else {
+                    true
+                }
+            }
+            Err(SqlxError::RowNotFound) => true,
+            Err(_) => false,
+        };
+
+    println!("Transaction table is empty: {}", transactions_table_epmty);
+
+    if transactions_table_epmty {
+        println!("Seeding transactions table!");
+        match sqlx::query_as!(
+            MoneyTransactionModel,
+            "INSERT INTO money_transactions (item_id, amount, reduces_balance) VALUES ($1, $2, $3) RETURNING *",
+            Uuid::nil(),
+            1000,
+            false,
+        )
+        .fetch_one(pool)
+        .await
+        {
+            Ok(_) => (),
+            Err(_) => (),
+        };
     }
 }
