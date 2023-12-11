@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Your mistake</title>
+  </head>
+  <body>
+    <h1>400: Some input error.</h1>
+    There was an error while performing your desired action: {{ error }}
+  </body>
+</html>

@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Our mistake</title>
+  </head>
+  <body>
+    <h1>500: Some server error.</h1>
+    There was an error from our side while performing your desired action: {{ error }}
+  </body>
+</html>
