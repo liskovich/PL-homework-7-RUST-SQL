@@ -1,7 +1,7 @@
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::model::{CreateMoneyTransactionModel, MoneyTransactionModel};
+use crate::model::{CreateMoneyTransactionModel, MoneyTransactionModel, TotalProfit};
 
 #[derive(Debug)]
 pub enum MoneyTransactionError {
@@ -48,6 +48,20 @@ impl TransactionsRepo {
             }
         }
         Ok(calculated_value)
+    }
+
+    pub async fn get_period_platform_earnings(&self) -> Result<i64, MoneyTransactionError> {
+        let query_result = match sqlx::query_as::<_, TotalProfit>(
+            "SELECT SUM(profitability) AS total_profit FROM oil_platforms",
+        )
+        .fetch_one(&self.pool)
+        .await
+        {
+            Ok(earnings) => earnings,
+            Err(_) => return Err(MoneyTransactionError::OtherError),
+        };
+
+        Ok(query_result.total_profit)
     }
 
     pub async fn get_all(&self) -> Result<Vec<MoneyTransactionModel>, MoneyTransactionError> {

@@ -103,3 +103,8 @@ pub struct CreateBeerModel {
     pub description: String,
     pub cost: i64,
 }
+
+#[derive(sqlx::FromRow)]
+pub struct TotalProfit {
+    pub total_profit: i64,
+}
