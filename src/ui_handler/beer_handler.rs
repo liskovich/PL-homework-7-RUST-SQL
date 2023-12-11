@@ -25,6 +25,8 @@ pub async fn beers_handler(data: &State<AppRepositories>) -> Template {
 
 #[get("/beers/create")]
 pub async fn get_purchase_beer_ui_handler() -> Template {
+    // TODO: pass info about available money balance
+
     Template::render("tera/create_beer", context! {})
 }
 
@@ -146,8 +148,7 @@ pub async fn purchase_beer_ui_handler(
 
     // if that is true, player has won
     if all_purchased {
-        let win_response = Template::render("tera/win", context! {});
-        return Err(win_response);
+        return Ok(Redirect::to("/win"));
     }
 
     Ok(Redirect::to("/beers"))

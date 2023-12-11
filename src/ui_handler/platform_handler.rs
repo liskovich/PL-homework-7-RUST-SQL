@@ -35,6 +35,8 @@ pub async fn index_handler(data: &State<AppRepositories>) -> Template {
 
 #[get("/platforms/create")]
 pub async fn get_create_platform_ui_handler() -> Template {
+    // TODO: pass info about available money balance
+    
     Template::render("tera/create_platform", context! {})
 }
 
@@ -134,6 +136,8 @@ pub async fn get_upgrade_platform_ui_handler(
     id: String,
     data: &State<AppRepositories>,
 ) -> Template {
+    // TODO: pass info about available money balance
+
     // validate provided id
     let uuid = match Uuid::parse_str(&id) {
         Ok(res) => res,
