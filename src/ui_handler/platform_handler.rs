@@ -34,10 +34,27 @@ pub async fn index_handler(data: &State<AppRepositories>) -> Template {
 }
 
 #[get("/platforms/create")]
-pub async fn get_create_platform_ui_handler() -> Template {
-    // TODO: pass info about available money balance
+pub async fn get_create_platform_ui_handler(data: &State<AppRepositories>) -> Template {
+    // get money balance info
+    let finances_repo = &data.finances_repo;
+    let balance = match finances_repo.get_available_balance().await {
+        Ok(bal) => bal,
+        Err(_) => {
+            return Template::render(
+                "tera/error/500",
+                context! {
+                    error: "Failed to get available balance".to_string(),
+                },
+            );
+        }
+    };
 
-    Template::render("tera/create_platform", context! {})
+    Template::render(
+        "tera/create_platform",
+        context! {
+            balance: balance,
+        },
+    )
 }
 
 #[post("/platforms/create", data = "<body>")]
@@ -136,8 +153,6 @@ pub async fn get_upgrade_platform_ui_handler(
     id: String,
     data: &State<AppRepositories>,
 ) -> Template {
-    // TODO: pass info about available money balance
-
     // validate provided id
     let uuid = match Uuid::parse_str(&id) {
         Ok(res) => res,
@@ -173,10 +188,25 @@ pub async fn get_upgrade_platform_ui_handler(
         }
     };
 
+    // get money balance info
+    let finances_repo = &data.finances_repo;
+    let balance = match finances_repo.get_available_balance().await {
+        Ok(bal) => bal,
+        Err(_) => {
+            return Template::render(
+                "tera/error/500",
+                context! {
+                    error: "Failed to get available balance".to_string(),
+                },
+            );
+        }
+    };
+
     Template::render(
         "tera/upgrade_platform",
         context! {
             item: retrieved,
+            balance: balance,
         },
     )
 }
@@ -186,8 +216,6 @@ pub async fn upgrade_platform_ui_handler(
     id: String,
     data: &State<AppRepositories>,
 ) -> Result<Redirect, Template> {
-    // TODO: request body must be Form<>
-
     // validate provided id
     let uuid = match Uuid::parse_str(&id) {
         Ok(res) => res,

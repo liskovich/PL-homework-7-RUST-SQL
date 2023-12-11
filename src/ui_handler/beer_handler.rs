@@ -24,10 +24,27 @@ pub async fn beers_handler(data: &State<AppRepositories>) -> Template {
 }
 
 #[get("/beers/create")]
-pub async fn get_purchase_beer_ui_handler() -> Template {
-    // TODO: pass info about available money balance
+pub async fn get_purchase_beer_ui_handler(data: &State<AppRepositories>) -> Template {
+    // get money balance info
+    let finances_repo = &data.finances_repo;
+    let balance = match finances_repo.get_available_balance().await {
+        Ok(bal) => bal,
+        Err(_) => {
+            return Template::render(
+                "tera/error/500",
+                context! {
+                    error: "Failed to get available balance".to_string(),
+                },
+            );
+        }
+    };
 
-    Template::render("tera/create_beer", context! {})
+    Template::render(
+        "tera/create_beer",
+        context! {
+            balance: balance,
+        },
+    )
 }
 
 #[patch("/beers/<id>")]
