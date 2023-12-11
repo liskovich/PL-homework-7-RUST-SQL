@@ -8,10 +8,7 @@ use crate::{
     },
     model::{CreateMoneyTransactionModel, CreatePlatformModel, PlatformType, UpdatePlatformModel},
     repo::{generic::Repo, platform_repo::OilPlatformError},
-    schema::{
-        CreatePlatformSchema, CreatePlatformUpgradeSchema, GenericResponse, PlatformListResponse,
-        SinglePlatformResponse,
-    },
+    schema::{CreatePlatformSchema, GenericResponse, PlatformListResponse, SinglePlatformResponse},
     AppRepositories,
 };
 use rocket::{get, http::Status, post, response::status::Custom, serde::json::Json, State};
@@ -145,10 +142,9 @@ pub async fn create_todo_handler(
     Ok(Json(json_response))
 }
 
-#[patch("/platforms/<id>", data = "<body>")]
+#[patch("/platforms/<id>")]
 pub async fn edit_platform_handler(
     id: String,
-    body: Json<CreatePlatformUpgradeSchema>,
     data: &State<AppRepositories>,
 ) -> Result<Json<SinglePlatformResponse>, Custom<Json<GenericResponse>>> {
     // validate provided id

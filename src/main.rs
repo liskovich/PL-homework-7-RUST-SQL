@@ -21,8 +21,9 @@ extern crate rocket;
 use rocket::http::Method;
 use rocket_cors::{AllowedOrigins, CorsOptions};
 
-use handler::platform_handler::{
-    create_todo_handler, health_checker_handler, platforms_list_handler,
+use handler::{
+    beer_handler::{beers_list_handler, purchase_beer_handler},
+    platform_handler::{create_todo_handler, health_checker_handler, platforms_list_handler},
 };
 
 struct AppRepositories {
@@ -95,7 +96,9 @@ async fn main() -> Result<(), rocket::Error> {
             routes![
                 health_checker_handler,
                 platforms_list_handler,
-                create_todo_handler
+                create_todo_handler,
+                beers_list_handler,
+                purchase_beer_handler,
             ],
         )
         .attach(cors.to_cors().unwrap())

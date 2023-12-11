@@ -1,4 +1,4 @@
-use sqlx::PgPool;
+use sqlx::{Error as SqlxError, PgPool};
 use uuid::Uuid;
 
 use crate::model::BeerModel;
@@ -34,14 +34,59 @@ impl BeerRepo {
     }
 
     pub async fn get_by_id(&self, id: Uuid) -> Result<BeerModel, BeerError> {
-        todo!()
+        let query_result = match sqlx::query_as!(BeerModel, "SELECT * FROM beers WHERE id = $1", id)
+            .fetch_one(&self.pool)
+            .await
+        {
+            Ok(beer) => beer,
+            Err(SqlxError::RowNotFound) => return Err(BeerError::NotFound),
+            Err(_) => return Err(BeerError::OtherError),
+        };
+
+        Ok(query_result)
     }
 
     pub async fn get_all(&self) -> Result<Vec<BeerModel>, BeerError> {
-        todo!()
+        let query_result = match sqlx::query_as!(BeerModel, "SELECT * FROM beers")
+            .fetch_all(&self.pool)
+            .await
+        {
+            Ok(beers) => beers,
+            Err(SqlxError::RowNotFound) => return Err(BeerError::NotFound),
+            Err(_) => return Err(BeerError::OtherError),
+        };
+
+        Ok(query_result)
     }
 
     pub async fn purchase(&self, id: Uuid) -> Result<BeerModel, BeerError> {
-        todo!()
+        let query_result = match sqlx::query_as!(BeerModel, "SELECT * FROM beers WHERE id = $1", id)
+            .fetch_one(&self.pool)
+            .await
+        {
+            Ok(beer) => beer,
+            Err(SqlxError::RowNotFound) => return Err(BeerError::NotFound),
+            Err(_) => return Err(BeerError::OtherError),
+        };
+
+        if query_result.purchased == Some(true) {
+            return Err(BeerError::AlreadyPurchased);
+        }
+
+        let query_result = match sqlx::query_as!(
+            BeerModel,
+            "UPDATE beers SET purchased = $1 WHERE id = $2 RETURNING *",
+            true,
+            id
+        )
+        .fetch_one(&self.pool)
+        .await
+        {
+            Ok(beer_purchased) => beer_purchased,
+            Err(SqlxError::RowNotFound) => return Err(BeerError::NotFound),
+            Err(_) => return Err(BeerError::OtherError),
+        };
+
+        Ok(query_result)
     }
 }

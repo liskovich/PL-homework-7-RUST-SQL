@@ -89,6 +89,7 @@ pub struct BeerModel {
     pub description: String,
     pub thumbnail: String,
     pub cost: i64,
+    pub purchased: Option<bool>,
     #[serde(rename = "createdAt")]
     pub created_at: Option<i64>,
     #[serde(rename = "updatedAt")]

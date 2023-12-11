@@ -1,4 +1,4 @@
-use crate::model::OilPlatformModel;
+use crate::model::{BeerModel, OilPlatformModel};
 use serde::{Deserialize, Serialize};
 
 // requests
@@ -36,6 +36,19 @@ pub struct PlatformListResponse {
     pub status: String,
     pub results: usize,
     pub platforms: Vec<OilPlatformModel>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct SingleBeerResponse {
+    pub status: String,
+    pub data: BeerModel,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct BeerListResponse {
+    pub status: String,
+    pub results: usize,
+    pub beers: Vec<BeerModel>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
