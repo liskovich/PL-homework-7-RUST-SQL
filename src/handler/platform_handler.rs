@@ -43,7 +43,7 @@ pub async fn platforms_list_handler(
 }
 
 #[post("/platforms", data = "<body>")]
-pub async fn create_todo_handler(
+pub async fn create_platform_handler(
     body: Json<CreatePlatformSchema>,
     data: &State<AppRepositories>,
 ) -> Result<Json<SinglePlatformResponse>, Custom<Json<GenericResponse>>> {

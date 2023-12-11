@@ -23,7 +23,10 @@ use rocket_cors::{AllowedOrigins, CorsOptions};
 
 use handler::{
     beer_handler::{beers_list_handler, purchase_beer_handler},
-    platform_handler::{create_todo_handler, health_checker_handler, platforms_list_handler},
+    platform_handler::{
+        create_platform_handler, edit_platform_handler, health_checker_handler,
+        platforms_list_handler,
+    },
 };
 
 struct AppRepositories {
@@ -96,7 +99,8 @@ async fn main() -> Result<(), rocket::Error> {
             routes![
                 health_checker_handler,
                 platforms_list_handler,
-                create_todo_handler,
+                create_platform_handler,
+                edit_platform_handler,
                 beers_list_handler,
                 purchase_beer_handler,
             ],
