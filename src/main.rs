@@ -1,4 +1,5 @@
 mod constants;
+mod game_loop;
 mod handler;
 mod helper;
 mod model;
@@ -28,6 +29,8 @@ use handler::{
         platforms_list_handler,
     },
 };
+
+use game_loop::echo_stream;
 
 struct AppRepositories {
     platform_repo: OilPlaftormRepo,
@@ -103,6 +106,7 @@ async fn main() -> Result<(), rocket::Error> {
                 edit_platform_handler,
                 beers_list_handler,
                 purchase_beer_handler,
+                echo_stream,
             ],
         )
         .attach(cors.to_cors().unwrap())
