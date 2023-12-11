@@ -128,5 +128,27 @@ pub async fn purchase_beer_ui_handler(
         }
     };
 
+    // check if all beers purchased
+    let all_beers = match beer_repo.get_all().await {
+        Ok(res) => res,
+
+        Err(e) => {
+            let error_response = Template::render(
+                "tera/error/500",
+                context! {
+                    error: e.to_string(),
+                },
+            );
+            return Err(error_response);
+        }
+    };
+    let all_purchased = all_beers.iter().all(|beer| beer.purchased.unwrap_or(false));
+
+    // if that is true, player has won
+    if all_purchased {
+        let win_response = Template::render("tera/win", context! {});
+        return Err(win_response);
+    }
+
     Ok(Redirect::to("/beers"))
 }
