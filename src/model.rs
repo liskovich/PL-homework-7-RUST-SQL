@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use sqlx::types::BigDecimal;
 use uuid::Uuid;
 
 #[derive(Debug, Deserialize, Serialize, Clone, sqlx::FromRow)]
@@ -105,6 +106,6 @@ pub struct CreateBeerModel {
 }
 
 #[derive(sqlx::FromRow)]
-pub struct TotalProfit {
-    pub total_profit: i64,
+pub struct NumericHandler {
+    pub calculation: Option<BigDecimal>,
 }
