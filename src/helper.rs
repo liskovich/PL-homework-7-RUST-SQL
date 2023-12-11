@@ -6,11 +6,17 @@ pub async fn seed_game_entities(pool: &PgPool) {
         .fetch_all(pool)
         .await
     {
-        Ok(beers) => if beers.len() > 0 { false } else { true },
+        Ok(beers) => {
+            if beers.len() > 0 {
+                false
+            } else {
+                true
+            }
+        }
         Err(SqlxError::RowNotFound) => true,
         Err(_) => false,
     };
-    
+
     println!("Beer table is empty: {}", beer_table_epmty);
 
     let beers = vec![
@@ -65,11 +71,11 @@ pub async fn seed_game_entities(pool: &PgPool) {
         println!("Seeding beer table!");
         for beer in beers {
             match sqlx::query_as!(
-                BeerModel, 
+                BeerModel,
                 "INSERT INTO beers (title, description, thumbnail, cost) VALUES ($1, $2, $3, $4) RETURNING *", 
-                beer.title, 
-                beer.description, 
-                beer.thumbnail, 
+                beer.title,
+                beer.description,
+                beer.thumbnail,
                 beer.cost,
             )
                 .fetch_one(pool)
