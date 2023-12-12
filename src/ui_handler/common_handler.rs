@@ -11,7 +11,7 @@ pub async fn game_won_handler(data: &State<AppRepositories>) -> Template {
         Ok(res) => res,
         Err(e) => {
             return Template::render(
-                "tera/error/500",
+                "error/500",
                 context! {
                     error: e.to_string(),
                 },
@@ -22,7 +22,7 @@ pub async fn game_won_handler(data: &State<AppRepositories>) -> Template {
         Ok(res) => res,
         Err(e) => {
             return Template::render(
-                "tera/error/500",
+                "error/500",
                 context! {
                     error: e.to_string(),
                 },
@@ -43,7 +43,7 @@ pub async fn game_won_handler(data: &State<AppRepositories>) -> Template {
         .sum::<i64>();
 
     Template::render(
-        "tera/game_over",
+        "game_over",
         context! {
             platforms: platforms,
             earned: total_earned,

@@ -9,13 +9,13 @@ pub async fn beers_handler(data: &State<AppRepositories>) -> Template {
 
     match beers_repo.get_all().await {
         Ok(res) => Template::render(
-            "tera/beers",
+            "beers",
             context! {
                 items: res,
             },
         ),
         Err(e) => Template::render(
-            "tera/error/500",
+            "error/500",
             context! {
                 error: e.to_string(),
             },
@@ -31,7 +31,7 @@ pub async fn get_purchase_beer_ui_handler(data: &State<AppRepositories>) -> Temp
         Ok(bal) => bal,
         Err(_) => {
             return Template::render(
-                "tera/error/500",
+                "error/500",
                 context! {
                     error: "Failed to get available balance".to_string(),
                 },
@@ -40,7 +40,7 @@ pub async fn get_purchase_beer_ui_handler(data: &State<AppRepositories>) -> Temp
     };
 
     Template::render(
-        "tera/create_beer",
+        "create_beer",
         context! {
             balance: balance,
         },
@@ -57,7 +57,7 @@ pub async fn purchase_beer_ui_handler(
         Ok(res) => res,
         Err(_) => {
             let error_response = Template::render(
-                "tera/error/400",
+                "error/400",
                 context! {
                     error: "Invalid ID provided".to_string(),
                 },
@@ -72,7 +72,7 @@ pub async fn purchase_beer_ui_handler(
         Ok(beer) => beer,
         Err(e) => {
             let error_response = Template::render(
-                "tera/error/500",
+                "error/500",
                 context! {
                     error: e.to_string(),
                 },
@@ -87,7 +87,7 @@ pub async fn purchase_beer_ui_handler(
         Ok(bal) => bal,
         Err(_) => {
             let error_response = Template::render(
-                "tera/error/500",
+                "error/500",
                 context! {
                     error: "Failed to upgrade beer".to_string(),
                 },
@@ -97,7 +97,7 @@ pub async fn purchase_beer_ui_handler(
     };
     if retrieved.cost > balance {
         let error_response = Template::render(
-            "tera/error/400",
+            "error/400",
             context! {
                 error: "Not enough funds for purchase".to_string(),
             },
@@ -110,7 +110,7 @@ pub async fn purchase_beer_ui_handler(
         Ok(platform) => platform,
         Err(BeerError::AlreadyPurchased) => {
             let error_response = Template::render(
-                "tera/error/400",
+                "error/400",
                 context! {
                     error: "You have already purchased this beer".to_string(),
                 },
@@ -119,7 +119,7 @@ pub async fn purchase_beer_ui_handler(
         }
         Err(e) => {
             let error_response = Template::render(
-                "tera/error/500",
+                "error/500",
                 context! {
                     error: e.to_string(),
                 },
@@ -138,7 +138,7 @@ pub async fn purchase_beer_ui_handler(
         Ok(_) => (),
         Err(e) => {
             let error_response = Template::render(
-                "tera/error/500",
+                "error/500",
                 context! {
                     error: format!("Failed to create platform: {}", e.to_string()),
                 },
@@ -153,7 +153,7 @@ pub async fn purchase_beer_ui_handler(
 
         Err(e) => {
             let error_response = Template::render(
-                "tera/error/500",
+                "error/500",
                 context! {
                     error: e.to_string(),
                 },

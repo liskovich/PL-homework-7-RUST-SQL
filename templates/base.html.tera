@@ -2,10 +2,10 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Tera Demo - {{ title }}</title>
+    <title>HW 7 - Rust game</title>
   </head>
   <body>
-    {% include "tera/nav" %}
+    {% include "nav" %}
 
     {% block content %}{% endblock content %}
 

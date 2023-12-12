@@ -19,13 +19,13 @@ pub async fn index_handler(data: &State<AppRepositories>) -> Template {
     let oil_platform_repo = &data.platform_repo;
     match oil_platform_repo.get_all().await {
         Ok(res) => Template::render(
-            "tera/index",
+            "index",
             context! {
                 items: res,
             },
         ),
         Err(e) => Template::render(
-            "tera/error/500",
+            "error/500",
             context! {
                 error: e.to_string(),
             },
@@ -41,7 +41,7 @@ pub async fn get_create_platform_ui_handler(data: &State<AppRepositories>) -> Te
         Ok(bal) => bal,
         Err(_) => {
             return Template::render(
-                "tera/error/500",
+                "error/500",
                 context! {
                     error: "Failed to get available balance".to_string(),
                 },
@@ -50,7 +50,7 @@ pub async fn get_create_platform_ui_handler(data: &State<AppRepositories>) -> Te
     };
 
     Template::render(
-        "tera/create_platform",
+        "create_platform",
         context! {
             balance: balance,
         },
@@ -73,7 +73,7 @@ pub async fn create_platform_ui_handler(
         Err(e) => {
             println!("Panic occurred: {:?}", e);
             let error_response = Template::render(
-                "tera/error/500",
+                "error/500",
                 context! {
                     error: "Invalid platform type specified".to_string(),
                 },
@@ -88,7 +88,7 @@ pub async fn create_platform_ui_handler(
         Ok(bal) => bal,
         Err(_) => {
             let error_response = Template::render(
-                "tera/error/500",
+                "error/500",
                 context! {
                     error: "Failed to create platform".to_string(),
                 },
@@ -99,7 +99,7 @@ pub async fn create_platform_ui_handler(
     let cost = get_platform_cost(validated_platform_type);
     if cost > balance {
         let error_response = Template::render(
-            "tera/error/400",
+            "error/400",
             context! {
                 error: "Not enough funds for purchase".to_string(),
             },
@@ -117,7 +117,7 @@ pub async fn create_platform_ui_handler(
         Ok(platform) => platform,
         Err(e) => {
             let error_response = Template::render(
-                "tera/error/500",
+                "error/500",
                 context! {
                     error: format!("Failed to create platform: {}", e.to_string()),
                 },
@@ -136,7 +136,7 @@ pub async fn create_platform_ui_handler(
         Ok(_) => (),
         Err(e) => {
             let error_response = Template::render(
-                "tera/error/500",
+                "error/500",
                 context! {
                     error: format!("Failed to create platform: {}", e.to_string()),
                 },
@@ -158,7 +158,7 @@ pub async fn get_upgrade_platform_ui_handler(
         Ok(res) => res,
         Err(_) => {
             return Template::render(
-                "tera/error/400",
+                "error/400",
                 context! {
                     error: "Invalid ID provided",
                 },
@@ -172,7 +172,7 @@ pub async fn get_upgrade_platform_ui_handler(
         Ok(platform) => platform,
         Err(OilPlatformError::NotFound) => {
             return Template::render(
-                "tera/error/404",
+                "error/404",
                 context! {
                     error: "Platform to upgrade not found".to_string(),
                 },
@@ -180,7 +180,7 @@ pub async fn get_upgrade_platform_ui_handler(
         }
         Err(e) => {
             return Template::render(
-                "tera/error/500",
+                "error/500",
                 context! {
                     error: e.to_string(),
                 },
@@ -194,7 +194,7 @@ pub async fn get_upgrade_platform_ui_handler(
         Ok(bal) => bal,
         Err(_) => {
             return Template::render(
-                "tera/error/500",
+                "error/500",
                 context! {
                     error: "Failed to get available balance".to_string(),
                 },
@@ -203,7 +203,7 @@ pub async fn get_upgrade_platform_ui_handler(
     };
 
     Template::render(
-        "tera/upgrade_platform",
+        "upgrade_platform",
         context! {
             item: retrieved,
             balance: balance,
@@ -221,7 +221,7 @@ pub async fn upgrade_platform_ui_handler(
         Ok(res) => res,
         Err(_) => {
             let error_response = Template::render(
-                "tera/error/400",
+                "error/400",
                 context! {
                     error: "Invalid ID provided".to_string(),
                 },
@@ -236,7 +236,7 @@ pub async fn upgrade_platform_ui_handler(
         Ok(platform) => platform,
         Err(e) => {
             let error_response = Template::render(
-                "tera/error/500",
+                "error/500",
                 context! {
                     error: e.to_string(),
                 },
@@ -251,7 +251,7 @@ pub async fn upgrade_platform_ui_handler(
         Ok(bal) => bal,
         Err(_) => {
             let error_response = Template::render(
-                "tera/error/500",
+                "error/500",
                 context! {
                     error: "Failed to upgrade platform".to_string(),
                 },
@@ -262,7 +262,7 @@ pub async fn upgrade_platform_ui_handler(
     let cost = get_platform_upgrade_cost(retrieved.platform_type);
     if cost > balance {
         let error_response = Template::render(
-            "tera/error/400",
+            "error/400",
             context! {
                 error: "Not enough funds for purchase".to_string(),
             },
@@ -278,7 +278,7 @@ pub async fn upgrade_platform_ui_handler(
         Ok(platform) => platform,
         Err(OilPlatformError::MaxLevelReached) => {
             let error_response = Template::render(
-                "tera/error/400",
+                "error/400",
                 context! {
                     error: "You have already upgraded the platform to the maximum".to_string(),
                 },
@@ -287,7 +287,7 @@ pub async fn upgrade_platform_ui_handler(
         }
         Err(e) => {
             let error_response = Template::render(
-                "tera/error/500",
+                "error/500",
                 context! {
                     error: e.to_string(),
                 },
@@ -306,7 +306,7 @@ pub async fn upgrade_platform_ui_handler(
         Ok(_) => (),
         Err(e) => {
             let error_response = Template::render(
-                "tera/error/500",
+                "error/500",
                 context! {
                     error: format!("Failed to create platform: {}", e.to_string()),
                 },

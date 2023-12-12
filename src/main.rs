@@ -16,6 +16,7 @@ use repo::{
 
 use helper::seed_game_entities;
 
+use rocket_dyn_templates::Template;
 use sqlx::{postgres::PgPoolOptions, PgPool};
 
 #[macro_use]
@@ -134,6 +135,7 @@ async fn main() -> Result<(), rocket::Error> {
             ],
         )
         .attach(cors.to_cors().unwrap())
+        .attach(Template::fairing())
         .launch()
         .await
         .expect("Failed to start server");
