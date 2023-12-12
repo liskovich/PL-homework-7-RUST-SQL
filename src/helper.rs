@@ -29,7 +29,6 @@ pub async fn seed_game_entities(pool: &PgPool) {
     println!("Beer table is empty: {}", beer_table_epmty);
 
     let beers = vec![
-        
         CreateBeerModel {
             title: "Pi*Wasser".to_string(),
             description: "Just do not drink it, please".to_string(),

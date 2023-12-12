@@ -148,69 +148,6 @@ pub async fn create_platform_ui_handler(
     Ok(Redirect::to(uri!("/")))
 }
 
-#[get("/platforms/edit/<id>")]
-pub async fn get_upgrade_platform_ui_handler(
-    id: String,
-    data: &State<AppRepositories>,
-) -> Template {
-    // validate provided id
-    let uuid = match Uuid::parse_str(&id) {
-        Ok(res) => res,
-        Err(_) => {
-            return Template::render(
-                "error/400",
-                context! {
-                    error: "Invalid ID provided",
-                },
-            );
-        }
-    };
-
-    // check if exists
-    let oil_platform_repo = &data.platform_repo;
-    let retrieved = match oil_platform_repo.get_by_id(uuid).await {
-        Ok(platform) => platform,
-        Err(OilPlatformError::NotFound) => {
-            return Template::render(
-                "error/404",
-                context! {
-                    error: "Platform to upgrade not found".to_string(),
-                },
-            );
-        }
-        Err(e) => {
-            return Template::render(
-                "error/500",
-                context! {
-                    error: e.to_string(),
-                },
-            );
-        }
-    };
-
-    // get money balance info
-    let finances_repo = &data.finances_repo;
-    let balance = match finances_repo.get_available_balance().await {
-        Ok(bal) => bal,
-        Err(_) => {
-            return Template::render(
-                "error/500",
-                context! {
-                    error: "Failed to get available balance".to_string(),
-                },
-            );
-        }
-    };
-
-    Template::render(
-        "upgrade_platform",
-        context! {
-            item: retrieved,
-            balance: balance,
-        },
-    )
-}
-
 #[post("/platforms/edit/<id>")]
 pub async fn upgrade_platform_ui_handler(
     id: String,

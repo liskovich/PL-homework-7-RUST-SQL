@@ -19,7 +19,14 @@
 
             <p>LVL: <b>{{ platform.platform_level }}</b></p>
             <p>Profitability: <b>${{ platform.profitability }} / 10s</b></p>
-            <a href="/platforms/edit/{{ platform.id }}">Upgrade</a>
+
+            {% if platform.platform_level == 10 %}
+                <p style="color: lightgreen;">MAX LVL. REACHED</p>
+            {% else %}
+                <form action="/platforms/edit/{{ platform.id }}" method="post">
+                    <input type="submit" value="Upgrade">
+                </form>
+            {% endif %}
         </div>
     {% endfor %}
 {% endblock content %}

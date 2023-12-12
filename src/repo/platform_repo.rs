@@ -122,7 +122,7 @@ impl Repo<OilPlatformModel, CreatePlatformModel, UpdatePlatformModel> for OilPla
             OilPlatformModel,
             "UPDATE oil_platforms SET platform_level = $1, profitability = $2, updated_at = $3 WHERE id = $4 RETURNING *",
             query_result.platform_level + 1,
-            new_item.profitability_addition,
+            query_result.profitability + new_item.profitability_addition,
             chrono::Utc::now().timestamp(),
             id
         )

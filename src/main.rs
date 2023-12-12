@@ -36,8 +36,8 @@ use ui_handler::{
     beer_handler::{beers_handler, purchase_beer_ui_handler},
     common_handler::game_won_handler,
     platform_handler::{
-        create_platform_ui_handler, get_create_platform_ui_handler,
-        get_upgrade_platform_ui_handler, index_handler, upgrade_platform_ui_handler,
+        create_platform_ui_handler, get_create_platform_ui_handler, index_handler,
+        upgrade_platform_ui_handler,
     },
 };
 
@@ -126,7 +126,6 @@ async fn main() -> Result<(), rocket::Error> {
                 index_handler,
                 get_create_platform_ui_handler,
                 create_platform_ui_handler,
-                get_upgrade_platform_ui_handler,
                 upgrade_platform_ui_handler,
                 beers_handler,
                 purchase_beer_ui_handler,

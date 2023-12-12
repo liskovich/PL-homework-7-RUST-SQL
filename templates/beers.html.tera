@@ -12,7 +12,7 @@
             <p>Cost: <b>$ {{ beer.cost }}</b></p>
             <!-- style it better -->
             {% if beer.purchased %}
-                <p style="color: greenyellow;">PURCHASED</p>
+                <p style="color: lightgreen;">PURCHASED</p>
             {% else %}
                 <form action="/beers/{{ beer.id }}" method="post">
                     <input type="submit" value="Purchase">
