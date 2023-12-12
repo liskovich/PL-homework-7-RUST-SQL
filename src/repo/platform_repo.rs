@@ -64,9 +64,12 @@ impl Repo<OilPlatformModel, CreatePlatformModel, UpdatePlatformModel> for OilPla
     }
 
     async fn get_all(&self) -> Result<Vec<OilPlatformModel>, OilPlatformError> {
-        let query_result = match sqlx::query_as!(OilPlatformModel, "SELECT * FROM oil_platforms")
-            .fetch_all(&self.pool)
-            .await
+        let query_result = match sqlx::query_as!(
+            OilPlatformModel,
+            "SELECT * FROM oil_platforms ORDER BY created_at ASC"
+        )
+        .fetch_all(&self.pool)
+        .await
         {
             Ok(platforms) => platforms,
             Err(SqlxError::RowNotFound) => return Err(OilPlatformError::NotFound),

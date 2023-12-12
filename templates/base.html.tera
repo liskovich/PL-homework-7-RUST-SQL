@@ -1,16 +1,40 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>HW 7 - Rust game</title>
-  </head>
-  <body>
-    {% include "nav" %}
+    <head>
+        <meta charset="utf-8" />
+        <title>HW 7 - Rust game</title>
+    </head>
+    <body>
+        {% include "nav" %}
 
-    {% block content %}{% endblock content %}
+        <h2>Your balance:</h2>
+        <h3 id="balance">Balance:</h3>
+        <h1 style="color: lightgreen;" id="justEarned">Just Earned:</h1>
 
-      <footer>
-        <a href="/">Home</a>
-      </footer>
-  </body>
+        {% block content %}{% endblock content %}
+
+        <footer>
+            <a href="/">Home</a>
+        </footer>
+        <script>
+            const socket = new WebSocket('ws://127.0.0.1:8000/game-state');
+
+            function updateData(data) {
+                const parsedData = JSON.parse(data);            
+                document.getElementById('balance').innerText = `Balance: $ ${parsedData.balance}`;
+
+                const justEarnedElement = document.getElementById('justEarned');
+                justEarnedElement.innerText = `+ $ ${parsedData.just_earned}`;
+
+                justEarnedElement.style.visibility = 'visible';
+                setTimeout(() => {
+                    justEarnedElement.style.visibility = 'hidden';
+                }, 1000);
+            }
+
+            socket.addEventListener('message', function (event) {
+                updateData(event.data);
+            });
+        </script>
+    </body>
 </html>
