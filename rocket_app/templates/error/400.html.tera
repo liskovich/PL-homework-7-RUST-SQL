@@ -5,7 +5,7 @@
     <title>Your mistake</title>
   </head>
   <body>
-    <h1>400: Some input error.</h1>
-    There was an error while performing your desired action: {{ error }}
+    <h1>400: {{ error }}</h1>
+    <a href="/">Back home</a>
   </body>
 </html>

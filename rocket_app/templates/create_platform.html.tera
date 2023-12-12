@@ -1,25 +1,35 @@
-{% extends "base" %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>HW 7 - Rust game</title>
+    </head>
+    <body>
+        {% include "nav" %}
 
-{% block content %}
-    <h1>New oil platforms</h1>
-    <h3>Your available funds: <b>$ {{ balance }}</b></h3>
+        <h1>New oil platforms</h1>
+        <h3>Your available funds: <b>$ {{ balance }}</b></h3>
 
-    {% if balance < 1000 %}
-        <p style="color: red;">You have insufficient funds to purchase any platform!</p>
-    {% endif %}
+        {% if balance < 1000 %}
+            <p style="color: red;">You have insufficient funds to purchase any platform!</p>
+        {% endif %}
 
-    <form action="/platforms/create" method="post">
-        <select name="platform_type" required>
-            {% if balance >= 1000 %}
-                <option value="Rig">Rig</option>
-            {% endif %}
-            {% if balance >= 10000 %}
-                <option value="Ground">Ground</option>
-            {% endif %}
-            {% if balance >= 100000 %}
-                <option value="Pump">Pump</option>
-            {% endif %}
-        </select>        
-        <input type="submit" value="Purchase">
-    </form>
-{% endblock content %}
+        <form action="/platforms/create" method="post">
+            <select name="platform_type" required>
+                {% if balance >= 1000 %}
+                    <option value="Rig">Rig</option>
+                {% endif %}
+                {% if balance >= 10000 %}
+                    <option value="Ground">Ground</option>
+                {% endif %}
+                {% if balance >= 100000 %}
+                    <option value="Pump">Pump</option>
+                {% endif %}
+            </select>        
+            <input type="submit" value="Purchase">
+        </form>
+        <footer>
+            <a href="/">Home</a>
+        </footer>
+    </body>
+</html>

@@ -12,6 +12,7 @@ use shared_db::repo::{
 
 use helper::seed_game_entities;
 
+use rocket::fs::{relative, FileServer};
 use rocket_dyn_templates::Template;
 use sqlx::{postgres::PgPoolOptions, PgPool};
 
@@ -29,11 +30,10 @@ use handler::{
 };
 
 use ui_handler::{
-    beer_handler::{beers_handler, purchase_beer_ui_handler},
-    common_handler::game_won_handler,
+    beer_handler::purchase_beer_ui_handler,
+    common_handler::{game_won_handler, index_handler},
     platform_handler::{
-        create_platform_ui_handler, get_create_platform_ui_handler, index_handler,
-        upgrade_platform_ui_handler,
+        create_platform_ui_handler, get_create_platform_ui_handler, upgrade_platform_ui_handler,
     },
 };
 
@@ -102,6 +102,7 @@ async fn main() -> Result<(), rocket::Error> {
 
     let _rocket = rocket::build()
         .manage(repositories)
+        .mount("/public", FileServer::from(relative!("/static")))
         .mount(
             "/api",
             routes![
@@ -120,7 +121,6 @@ async fn main() -> Result<(), rocket::Error> {
                 get_create_platform_ui_handler,
                 create_platform_ui_handler,
                 upgrade_platform_ui_handler,
-                beers_handler,
                 purchase_beer_ui_handler,
                 game_won_handler,
             ],

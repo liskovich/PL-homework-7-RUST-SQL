@@ -1,11 +1,12 @@
 {% extends "base" %} 
 
 {% block content %}
+    <!-- Platforms section -->
     <h1>Oil platforms</h1>
     <a href="/platforms/create">Purchase platform</a>
     <h3>Here are all your purchased oil platforms:</h3>
 
-    {% for platform in items %}
+    {% for platform in platforms %}
         <div>
             <h5>{{ platform.platform_type }}</h5>
 
@@ -25,6 +26,27 @@
             {% else %}
                 <form action="/platforms/edit/{{ platform.id }}" method="post">
                     <input type="submit" value="Upgrade">
+                </form>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <!-- Beers section -->
+    <h1>Beers</h1>
+    <h3>Purchase all these beers to WIN the game!</h3>
+
+    {% for beer in beers %}
+        <div>
+            <h5>{{ beer.title }}</h5>
+            <img src="{{ beer.thumbnail }}" alt="{{ beer.id }}" >
+            <p>{{ beer.description }}</p>
+            <p>Cost: <b>$ {{ beer.cost }}</b></p>
+            <!-- style it better -->
+            {% if beer.purchased %}
+                <p style="color: lightgreen;">PURCHASED</p>
+            {% else %}
+                <form action="/beers/{{ beer.id }}" method="post">
+                    <input type="submit" value="Purchase">
                 </form>
             {% endif %}
         </div>

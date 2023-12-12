@@ -17,25 +17,6 @@ use shared_db::{
 use rocket::{get, post, State};
 use uuid::Uuid;
 
-#[get("/")]
-pub async fn index_handler(data: &State<AppRepositories>) -> Template {
-    let oil_platform_repo = &data.platform_repo;
-    match oil_platform_repo.get_all().await {
-        Ok(res) => Template::render(
-            "index",
-            context! {
-                items: res,
-            },
-        ),
-        Err(e) => Template::render(
-            "error/500",
-            context! {
-                error: e.to_string(),
-            },
-        ),
-    }
-}
-
 #[get("/platforms/create")]
 pub async fn get_create_platform_ui_handler(data: &State<AppRepositories>) -> Template {
     // get money balance info

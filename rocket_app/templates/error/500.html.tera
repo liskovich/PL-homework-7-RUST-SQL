@@ -6,6 +6,7 @@
   </head>
   <body>
     <h1>500: Some server error.</h1>
-    There was an error from our side while performing your desired action: {{ error }}
+    There was an error from our side while performing your desired action: {{ error }}.
+    <a href="/">Back home</a>
   </body>
 </html>

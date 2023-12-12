@@ -16,10 +16,11 @@
         <footer>
             <a href="/">Home</a>
         </footer>
+        <script src="/public/websocketManager.js"></script>
         <script>
-            const socket = new WebSocket('ws://127.0.0.1:3030/game-state');
-
-            function updateData(data) {
+            const wsManager = WebSocketManager.getInstance('ws://127.0.0.1:3030/game-state');
+    
+            wsManager.handleWebSocketEvents((data) => {
                 const parsedData = JSON.parse(data);            
                 document.getElementById('balance').innerText = `Balance: $ ${parsedData.balance}`;
 
@@ -30,14 +31,10 @@
                 setTimeout(() => {
                     justEarnedElement.style.visibility = 'hidden';
                 }, 1000);
-            }
-
-            socket.addEventListener('message', function (event) {
-                updateData(event.data);
             });
 
             window.addEventListener('beforeunload', function () {
-                socket.close();
+                wsManager.closeConnection();
             });
         </script>
     </body>

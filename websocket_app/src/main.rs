@@ -1,5 +1,6 @@
 mod real_time_sender;
 
+use dotenv::dotenv;
 use futures_util::{SinkExt, StreamExt};
 use log::*;
 use real_time_sender::get_realtime_financial_data;
@@ -9,7 +10,6 @@ use tokio_tungstenite::{
     accept_async,
     tungstenite::{Error, Message, Result},
 };
-use dotenv::dotenv;
 
 async fn accept_connection(peer: SocketAddr, stream: TcpStream) {
     if let Err(e) = handle_connection(peer, stream).await {
