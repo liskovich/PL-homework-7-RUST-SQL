@@ -1,5 +1,14 @@
 # Rust CRUD with Postgres (SQL) database
 
+## About the app
+
+I built a game - Oil Mining Tycoon. The goal of the game is to purchase oil platforms and make money with them (every 10 seconds you get total earnings from all your platforms), and then buy beer with that money. Once you have purchased all the beer, you win.
+
+**Features:**
+- Oil platform CRUD with Web UI;
+- Storing financial information - earnings from platforms and purchases;
+- Live, recurring earnings system, powered by WebSockets.
+
 ## How to run?
 
 **IMPORTANT NOTE:**
@@ -27,6 +36,9 @@ DATABASE_URL=postgresql://admin:password123@localhost:5432/rust_sqlx?schema=publ
 3. Go to the root of the project and run `docker compose up --build` to and wait for it to start the Postgres container.
 4. Install the Rust SQLx tools to work with database migrations, run `cargo install sqlx-cli`.
 5. Run the migrations `sqlx migrate run`.
-6. Run `cargo build` to build and run the rust app using `cargo run`.
-7. Navigate to [http://127.0.0.1:8000](http://127.0.0.1:8000). 
-8. If everything is OK, the index page of application should be visible.
+6. Run `cargo build` to build app.
+7. In 2 separate terminals, run these commands:
+    - `cargo run -p rocket_app` (to start the main rust app);
+    - `cargo run -p cargo run -p websocket_app` (to start the live earnings streaming app);
+8. Navigate to [http://127.0.0.1:8000](http://127.0.0.1:8000). 
+9. If everything is OK, the index page of application should be visible.
