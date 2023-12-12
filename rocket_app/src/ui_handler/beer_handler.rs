@@ -4,26 +4,6 @@ use rocket_dyn_templates::{context, Template};
 use shared_db::{model::CreateMoneyTransactionModel, repo::beer_repo::BeerError};
 use uuid::Uuid;
 
-// #[get("/beers")]
-// pub async fn beers_handler(data: &State<AppRepositories>) -> Template {
-//     let beers_repo = &data.beer_repo;
-
-//     match beers_repo.get_all().await {
-//         Ok(res) => Template::render(
-//             "beers",
-//             context! {
-//                 items: res,
-//             },
-//         ),
-//         Err(e) => Template::render(
-//             "error/500",
-//             context! {
-//                 error: e.to_string(),
-//             },
-//         ),
-//     }
-// }
-
 #[post("/beers/<id>")]
 pub async fn purchase_beer_ui_handler(
     id: String,
@@ -145,5 +125,5 @@ pub async fn purchase_beer_ui_handler(
         return Ok(Redirect::to("/win"));
     }
 
-    Ok(Redirect::to("/beers"))
+    Ok(Redirect::to("/"))
 }
