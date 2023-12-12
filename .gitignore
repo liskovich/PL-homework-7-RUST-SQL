@@ -24,4 +24,4 @@ target
 
 # IDE files
 .vscode
-templates/tera-dev
+rocket_app/templates/tera-dev

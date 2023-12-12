@@ -1,5 +1,5 @@
-use crate::model::{BeerModel, OilPlatformModel};
 use serde::{Deserialize, Serialize};
+use shared_db::model::{BeerModel, OilPlatformModel};
 
 // requests
 #[derive(Deserialize, Debug, Clone)]

@@ -1,10 +1,9 @@
 use crate::{
-    model::CreateMoneyTransactionModel,
-    repo::beer_repo::BeerError,
     schema::{BeerListResponse, GenericResponse, SingleBeerResponse},
     AppRepositories,
 };
 use rocket::{get, http::Status, response::status::Custom, serde::json::Json, State};
+use shared_db::{model::CreateMoneyTransactionModel, repo::beer_repo::BeerError};
 use uuid::Uuid;
 
 #[get("/beers")]

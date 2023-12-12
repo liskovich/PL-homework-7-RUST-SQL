@@ -1,15 +1,14 @@
-mod constants;
 mod game_loop;
 mod handler;
 mod helper;
-mod model;
-mod repo;
 mod schema;
 mod ui_handler;
 
+use game_loop::game_earnings_stream;
+
 use dotenv::dotenv;
 
-use repo::{
+use shared_db::repo::{
     beer_repo::BeerRepo, generic::Repo, platform_repo::OilPlaftormRepo,
     transactions_repo::TransactionsRepo,
 };
@@ -40,8 +39,6 @@ use ui_handler::{
         upgrade_platform_ui_handler,
     },
 };
-
-use game_loop::game_earnings_stream;
 
 struct AppRepositories {
     platform_repo: OilPlaftormRepo,
@@ -81,7 +78,7 @@ async fn main() -> Result<(), rocket::Error> {
         }
     };
 
-    match sqlx::migrate!("./migrations").run(&pool).await {
+    match sqlx::migrate!("./../migrations").run(&pool).await {
         Ok(()) => {
             println!("Database migrations successful!");
         }

@@ -2,11 +2,15 @@ use std::panic;
 
 use crate::{
     helper::{get_platform_cost, get_platform_profitability, get_platform_upgrade_cost},
-    model::{CreateMoneyTransactionModel, CreatePlatformModel, UpdatePlatformModel},
-    repo::{generic::Repo, platform_repo::OilPlatformError},
     schema::{CreatePlatformSchema, GenericResponse, PlatformListResponse, SinglePlatformResponse},
     AppRepositories,
 };
+
+use shared_db::{
+    model::{CreateMoneyTransactionModel, CreatePlatformModel, UpdatePlatformModel},
+    repo::{generic::Repo, platform_repo::OilPlatformError},
+};
+
 use rocket::{get, http::Status, post, response::status::Custom, serde::json::Json, State};
 use uuid::Uuid;
 

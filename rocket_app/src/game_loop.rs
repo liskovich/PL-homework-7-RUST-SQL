@@ -6,8 +6,7 @@ use sqlx::postgres::PgPoolOptions;
 use tokio::sync::mpsc;
 use uuid::Uuid;
 
-use crate::model::CreateMoneyTransactionModel;
-use crate::repo::transactions_repo::TransactionsRepo;
+use shared_db::{model::CreateMoneyTransactionModel, repo::transactions_repo::TransactionsRepo};
 
 #[derive(Debug, Serialize, Deserialize)]
 struct BalanceData {

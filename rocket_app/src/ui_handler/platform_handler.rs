@@ -6,11 +6,14 @@ use rocket_dyn_templates::{context, Template};
 
 use crate::{
     helper::{get_platform_cost, get_platform_profitability, get_platform_upgrade_cost},
-    model::{CreateMoneyTransactionModel, CreatePlatformModel, UpdatePlatformModel},
-    repo::{generic::Repo, platform_repo::OilPlatformError},
     schema::CreatePlatformSchema,
     AppRepositories,
 };
+use shared_db::{
+    model::{CreateMoneyTransactionModel, CreatePlatformModel, UpdatePlatformModel},
+    repo::{generic::Repo, platform_repo::OilPlatformError},
+};
+
 use rocket::{get, post, State};
 use uuid::Uuid;
 

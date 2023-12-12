@@ -1,6 +1,7 @@
-use crate::{repo::generic::Repo, AppRepositories};
+use crate::AppRepositories;
 use rocket::{get, State};
 use rocket_dyn_templates::{context, Template};
+use shared_db::repo::generic::Repo;
 
 #[get("/win")]
 pub async fn game_won_handler(data: &State<AppRepositories>) -> Template {

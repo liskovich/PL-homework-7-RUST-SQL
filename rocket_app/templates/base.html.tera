@@ -17,7 +17,7 @@
             <a href="/">Home</a>
         </footer>
         <script>
-            const socket = new WebSocket('ws://127.0.0.1:8000/game-state');
+            const socket = new WebSocket('ws://127.0.0.1:3030/game-state');
 
             function updateData(data) {
                 const parsedData = JSON.parse(data);            
