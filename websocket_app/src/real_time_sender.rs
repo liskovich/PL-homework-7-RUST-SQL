@@ -1,43 +1,62 @@
-// use std::sync::{Arc, Mutex};
-// use rocket::futures::{StreamExt, FutureExt};
-// use tokio::sync::mpsc;
-// use warp::ws::{Message, WebSocket};
+use serde::{Deserialize, Serialize};
+use shared_db::{model::CreateMoneyTransactionModel, repo::transactions_repo::TransactionsRepo};
+use sqlx::postgres::PgPoolOptions;
+use uuid::Uuid;
 
-// // async fn send_info(ws: WebSocket, sender: Arc<Mutex<mpsc::Sender<Message>>>) {
-// //     let (mut ws_tx, _) = ws.split();
+#[derive(Debug, Serialize, Deserialize)]
+struct BalanceData {
+    balance: i64,
+    just_earned: i64,
+}
 
-// //     loop {
-// //         tokio::time::sleep(tokio::time::Duration::from_secs(10)).await;
+pub async fn get_realtime_financial_data() -> String {
+    // separate database connection for streams
+    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let pool = match PgPoolOptions::new()
+        .max_connections(10)
+        .connect(&database_url)
+        .await
+    {
+        Ok(pool) => {
+            println!("Connection to the database is successful!");
+            pool
+        }
+        Err(err) => {
+            println!("Failed to connect to the database: {:?}", err);
+            std::process::exit(1);
+        }
+    };
+    let finance_repo = TransactionsRepo::new(pool);
 
-// //         // Get the message to send (you can change this string to anything you want to send)
-// //         let message = Message::text("Hello from the server!");
+    // calculate earnings for this period
+    let recent_earnings = match finance_repo.get_period_platform_earnings().await {
+        Ok(result) => result,
+        Err(_) => 0,
+    };
 
-// //         // Send the message to the WebSocket client
-// //         if let Err(_) = ws_tx.send_message(&message).await {
-// //             break;
-// //         }
-// //     }
-// // }
+    // update balance
+    let earnings_tx = CreateMoneyTransactionModel {
+        item_id: Some(Uuid::nil()),
+        amount: recent_earnings,
+        reduces_balance: false,
+    };
+    let _ = match finance_repo.create(earnings_tx).await {
+        Ok(_) => true,
+        Err(_) => false,
+    };
 
-// pub async fn start_websocket_service(ws: warp::ws::WebSocket) {
-//     // let (ws_tx, ws_rx) = ws.split();
-//     // let (sender, receiver) = mpsc::channel::<Message>(100);
+    // retrieve updated balance
+    let current_balance = match finance_repo.get_available_balance().await {
+        Ok(result) => result,
+        Err(_) => 0,
+    };
 
-//     // // Spawn a task to send messages periodically
-//     // tokio::spawn(send_info(ws, Arc::new(Mutex::new(sender))));
-
-//     // // Receive messages from the WebSocket client (if needed)
-//     // let receiver_task = receiver
-//     //     .for_each(|_| async {})
-//     //     .map_err(|_| ());
-
-//     // tokio::spawn(receiver_task);
-
-//     // Just echo all messages back...
-//     let (tx, rx) = ws.split();
-//     rx.forward(tx).map(|result| {
-//         if let Err(e) = result {
-//             eprintln!("websocket error: {:?}", e);
-//         }
-//     });
-// }
+    let response_data = BalanceData {
+        balance: current_balance,
+        just_earned: recent_earnings,
+    };
+    match serde_json::to_string(&response_data) {
+        Ok(res) => res,
+        Err(_) => "".to_string(),
+    }
+}

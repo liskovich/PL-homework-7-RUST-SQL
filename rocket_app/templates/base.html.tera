@@ -35,6 +35,10 @@
             socket.addEventListener('message', function (event) {
                 updateData(event.data);
             });
+
+            window.addEventListener('beforeunload', function () {
+                socket.close();
+            });
         </script>
     </body>
 </html>
