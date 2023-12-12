@@ -24,3 +24,4 @@ target
 
 # IDE files
 .vscode
+templates/tera-dev
