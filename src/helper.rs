@@ -39,7 +39,7 @@ pub async fn seed_game_entities(pool: &PgPool) {
             title: "Carlsberg".to_string(),
             description: "Hundreds of beers at the heart of moments that bring people together"
                 .to_string(),
-            thumbnail: "https://www.spiritsandwine.lv/img/items/92/9230.jpg".to_string(),
+            thumbnail: "https://cdn.webshopapp.com/shops/65337/files/422556506/carlsberg-00.jpg".to_string(),
             cost: 20000,
         },
         CreateBeerModel {
@@ -58,7 +58,7 @@ pub async fn seed_game_entities(pool: &PgPool) {
         CreateBeerModel {
             title: "Lacplesis".to_string(),
             description: "Experience of many decades of brewing".to_string(),
-            thumbnail: "https://www.spiritsandwine.lv/img/items/39/3983.jpeg".to_string(),
+            thumbnail: "https://alkoutlet.lv/media/catalog/product/cache/937da15ad1ee98697c5954ed139da50b/imp/ort/235157.jpg".to_string(),
             cost: 100000,
         },
         CreateBeerModel {

@@ -211,7 +211,7 @@ pub async fn get_upgrade_platform_ui_handler(
     )
 }
 
-#[patch("/platforms/edit/<id>")]
+#[post("/platforms/edit/<id>")]
 pub async fn upgrade_platform_ui_handler(
     id: String,
     data: &State<AppRepositories>,

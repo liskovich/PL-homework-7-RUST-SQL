@@ -47,7 +47,7 @@ impl BeerRepo {
     }
 
     pub async fn get_all(&self) -> Result<Vec<BeerModel>, BeerError> {
-        let query_result = match sqlx::query_as!(BeerModel, "SELECT * FROM beers")
+        let query_result = match sqlx::query_as!(BeerModel, "SELECT * FROM beers ORDER BY cost ASC")
             .fetch_all(&self.pool)
             .await
         {
