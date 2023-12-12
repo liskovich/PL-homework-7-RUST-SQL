@@ -1,1 +1,18 @@
 {% extends "base" %}
+
+{% block content %}
+    <h1>Beers</h1>
+    <h3>Purchase all these beers to WIN the game!</h3>
+
+    {% for beer in items %}
+        <div>
+            <h5>{{ beer.title }}</h5>
+            <img src="{{ beer.thumbnail }}" alt="{{ beer.id }}" >
+            <p>{{ beer.description }}</p>
+            <p>Cost: <b>$ {{ beer.cost }}</b></p>
+            <form action="/beers/{{ beer.id }}" method="post">
+                <input type="submit" value="Purchase">
+            </form>
+        </div>
+    {% endfor %}
+{% endblock content %}

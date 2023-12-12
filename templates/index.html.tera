@@ -9,7 +9,7 @@
         <div>
             <h5>{{ platform.platform_type }}</h5>
             <p>LVL: <b>{{ platform.platform_level }}</b></p>
-            <p>Profitability: <b>{{ platform.profitability }} $/10s</b></p>
+            <p>Profitability: <b>${{ platform.profitability }} / 10s</b></p>
             <a href="/platforms/edit/{{ platform.id }}">Upgrade</a>
         </div>
     {% endfor %}
