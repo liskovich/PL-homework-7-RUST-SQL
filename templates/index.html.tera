@@ -8,6 +8,15 @@
     {% for platform in items %}
         <div>
             <h5>{{ platform.platform_type }}</h5>
+
+            {% if platform.platform_type == "Rig" %}
+                <img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Oil_platform_P-51_%28Brazil%29.jpg" alt="oil_rig">
+            {% elif platform.platform_type == "Ground" %}
+                <img src="https://www.ruralswalabama.org/wp-content/uploads/2011/11/Gilbertown-Oil-Well_1ce-866.jpg" alt="oil_ground">
+            {% else %}
+                <img src="https://images.fineartamerica.com/images/artworkimages/mediumlarge/2/2-oil-industry-well-pumps-pgiam.jpg" alt="oil_pump">
+            {% endif %}
+
             <p>LVL: <b>{{ platform.platform_level }}</b></p>
             <p>Profitability: <b>${{ platform.profitability }} / 10s</b></p>
             <a href="/platforms/edit/{{ platform.id }}">Upgrade</a>

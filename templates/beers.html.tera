@@ -10,9 +10,14 @@
             <img src="{{ beer.thumbnail }}" alt="{{ beer.id }}" >
             <p>{{ beer.description }}</p>
             <p>Cost: <b>$ {{ beer.cost }}</b></p>
-            <form action="/beers/{{ beer.id }}" method="post">
-                <input type="submit" value="Purchase">
-            </form>
+            <!-- style it better -->
+            {% if beer.purchased %}
+                <p>PURCHASED</p>
+            {% else %}
+                <form action="/beers/{{ beer.id }}" method="post">
+                    <input type="submit" value="Purchase">
+                </form>
+            {% endif %}
         </div>
     {% endfor %}
 {% endblock content %}
