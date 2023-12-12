@@ -1,1 +1,25 @@
 {% extends "base" %}
+
+{% block content %}
+    <h1>New oil platforms</h1>
+    <h3>Your available funds: <b>$ {{ balance }}</b></h3>
+
+    {% if balance < 1000 %}
+        <p style="color: red;">You have insufficient funds to purchase any platform!</p>
+    {% endif %}
+
+    <form action="/platforms/create" method="post">
+        <select name="platform_type" required>
+            {% if balance >= 1000 %}
+                <option value="Rig">Rig</option>
+            {% endif %}
+            {% if balance >= 10000 %}
+                <option value="Ground">Ground</option>
+            {% endif %}
+            {% if balance >= 100000 %}
+                <option value="Pump">Pump</option>
+            {% endif %}
+        </select>        
+        <input type="submit" value="Purchase">
+    </form>
+{% endblock content %}
