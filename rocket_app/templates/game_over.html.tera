@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>HW 7 - Rust game</title>
+    <style>
+      body {
+        background-color: #333;
+        color: white;
+        margin: 0;
+      }
+
+      .platform-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+      }
+
+      .button-link {
+        display: inline-block;
+        padding: 10px 20px;
+        text-decoration: none;
+        background-color: #3498db;
+        color: #fff;
+        border: 1px solid #3498db;
+        transition: background-color 0.3s ease-in-out;
+      }
+
+      .button-link:hover {
+        cursor: pointer;
+      }
+
+      .platform-choice {
+        width: 150px;
+        padding: 10px 20px;
+        border: 2px solid #3498db;
+        transition: background-color 0.3s ease-in-out;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+
+      .grid-item {
+        border: 1px solid darkblue;
+      }
+
+      .balance-card {
+        width: 500px;
+        margin-top: 20px;
+        padding-top: 15px;
+        text-align: center;
+        background-color: gray;
+        border: 1px solid darkblue;
+      }
+
+      .balance-card-text {
+        color: darkblue;
+      }
+
+      .container {
+        display: grid;
+        place-items: center;
+      }
+
+      .page-content {
+        width: 100%;
+        max-width: 1000px;
+        min-width: 300px;
+        text-align: center;
+        padding-bottom: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    {% include "nav" %}
+
+    <div class="container">
+      <h1 style="color: lightgreen">Congratulations!</h1>
+      <img
+        style="height: 300px"
+        src="https://static.foxbusiness.com/foxbusiness.com/content/uploads/2021/06/Fireworks-iStock.jpg"
+        alt="fireworks"
+      />
+      <h2>You won the game by succesfully collecting all the beers</h2>
+
+      <h3>Your financial stats:</h3>
+      <div class="balance-card">
+        <b style="color: lightgreen">Total earned:</b>
+        <h1 class="balance-card-text" id="balance">$ {{ earned }}</h1>
+        <b style="color: lightcoral">Total spent:</b>
+        <h1 class="balance-card-text" id="balance">$ {{ spent }}</h1>
+      </div>
+
+      <div class="page-content">
+        <h3>Your purchased platforms:</h3>
+        <div class="grid-container">
+          {% for platform in platforms %}
+          <div class="grid-item">
+            <div style="text-align: center">
+              <h4>{{ platform.platform_type }}</h4>
+            </div>
+            {% if platform.platform_type == "Rig" %}
+            <img
+              class="platform-image"
+              src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Oil_platform_P-51_%28Brazil%29.jpg"
+              alt="oil_rig"
+            />
+            {% elif platform.platform_type == "Ground" %}
+            <img
+              class="platform-image"
+              src="https://www.ruralswalabama.org/wp-content/uploads/2011/11/Gilbertown-Oil-Well_1ce-866.jpg"
+              alt="oil_ground"
+            />
+            {% else %}
+            <img
+              class="platform-image"
+              src="https://images.fineartamerica.com/images/artworkimages/mediumlarge/2/2-oil-industry-well-pumps-pgiam.jpg"
+              alt="oil_pump"
+            />
+            {% endif %}
+
+            <p style="margin-left: 10px">
+              LVL: <b style="color: #3498db">{{ platform.platform_level }}</b>
+            </p>
+            <p style="margin-left: 10px">
+              Profitability:
+              <b style="color: #3498db">${{ platform.profitability }} / 10s</b>
+            </p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

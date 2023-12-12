@@ -3,10 +3,21 @@
   <head>
     <meta charset="utf-8" />
     <title>Our mistake</title>
+    <style>
+      body {
+        background-color: #333;
+        color: white;
+        margin: 0;
+        text-align: center;
+      }
+
+      a {
+        color: #3498db;
+      }
+    </style>
   </head>
   <body>
     <h1>500: Some server error.</h1>
-    There was an error from our side while performing your desired action: {{ error }}.
-    <a href="/">Back home</a>
+    There was an error from our side while performing your desired action: {{ error }}
   </body>
 </html>

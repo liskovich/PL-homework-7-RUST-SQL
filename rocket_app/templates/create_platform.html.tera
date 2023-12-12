@@ -1,35 +1,98 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <title>HW 7 - Rust game</title>
-    </head>
-    <body>
-        {% include "nav" %}
+  <head>
+    <meta charset="utf-8" />
+    <title>HW 7 - Rust game</title>
+    <style>
+      body {
+        background-color: #333;
+        color: white;
+        margin: 0;
+      }
 
-        <h1>New oil platforms</h1>
-        <h3>Your available funds: <b>$ {{ balance }}</b></h3>
+      .button-link {
+        display: inline-block;
+        padding: 10px 20px;
+        text-decoration: none;
+        background-color: #3498db;
+        color: #fff;
+        border: 1px solid #3498db;
+        transition: background-color 0.3s ease-in-out;
+      }
+
+      .button-link:hover {
+        cursor: pointer;
+      }
+
+      .platform-choice {
+        width: 150px;
+        padding: 10px 20px;
+        border: 2px solid #3498db;
+        transition: background-color 0.3s ease-in-out;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .balance-card {
+        width: 500px;
+        margin-top: 20px;
+        padding-top: 15px;
+        text-align: center;
+        background-color: gray;
+        border: 1px solid darkblue;
+      }
+
+      .balance-card-text {
+        color: darkblue;
+      }
+
+      .container {
+        display: grid;
+        place-items: center;
+      }
+
+      .page-content {
+        width: 100%;
+        max-width: 1000px;
+        min-width: 300px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    {% include "nav" %}
+
+    <div class="container">
+      <div class="page-content">
+        <h1>New oil platform</h1>
+        <h3>
+          Your available funds: <b style="color: #3498db">$ {{ balance }}</b>
+        </h3>
 
         {% if balance < 1000 %}
-            <p style="color: red;">You have insufficient funds to purchase any platform!</p>
+        <p style="color: red">
+          You have insufficient funds to purchase any platform!
+        </p>
         {% endif %}
 
         <form action="/platforms/create" method="post">
-            <select name="platform_type" required>
-                {% if balance >= 1000 %}
-                    <option value="Rig">Rig</option>
-                {% endif %}
-                {% if balance >= 10000 %}
-                    <option value="Ground">Ground</option>
-                {% endif %}
-                {% if balance >= 100000 %}
-                    <option value="Pump">Pump</option>
-                {% endif %}
-            </select>        
-            <input type="submit" value="Purchase">
+          <select class="platform-choice" name="platform_type" required>
+            {% if balance >= 1000 %}
+            <option value="Rig">Rig</option>
+            {% endif %} {% if balance >= 10000 %}
+            <option value="Ground">Ground</option>
+            {% endif %} {% if balance >= 100000 %}
+            <option value="Pump">Pump</option>
+            {% endif %}
+          </select>
+          <input class="button-link" type="submit" value="Purchase" />
         </form>
-        <footer>
-            <a href="/">Home</a>
-        </footer>
-    </body>
+      </div>
+      <footer style="margin-top: 20px">
+        <a style="color: #3498db" href="/"
+          ><h3 style="margin-bottom: 50px">Home</h3></a
+        >
+      </footer>
+    </div>
+  </body>
 </html>

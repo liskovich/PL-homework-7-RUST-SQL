@@ -1,1 +1,12 @@
-<a href="/">Home</a> | <a href="/beers">Beers</a>
+<div
+  style="
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: black;
+    text-align: center;
+  "
+>
+  <h3 style="color: white;">
+    Rust OIL Mining Tycoon
+  </h3>
+</div>

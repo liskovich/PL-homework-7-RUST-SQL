@@ -1,54 +1,81 @@
-{% extends "base" %} 
+{% extends "base" %} {% block content %}
+<div class="page-content">
+  <!-- Platforms section -->
+  <h1>Oil platforms</h1>
+  <a class="button-link" href="/platforms/create">Purchase platform</a>
+  <h3>Here are all your purchased oil platforms:</h3>
 
-{% block content %}
-    <!-- Platforms section -->
-    <h1>Oil platforms</h1>
-    <a href="/platforms/create">Purchase platform</a>
-    <h3>Here are all your purchased oil platforms:</h3>
-
+  <div class="grid-container">
     {% for platform in platforms %}
-        <div>
-            <h5>{{ platform.platform_type }}</h5>
+    <div class="grid-item">
+      <div style="text-align: center">
+        <h4>{{ platform.platform_type }}</h4>
+      </div>
+      {% if platform.platform_type == "Rig" %}
+      <img
+        class="platform-image"
+        src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Oil_platform_P-51_%28Brazil%29.jpg"
+        alt="oil_rig"
+      />
+      {% elif platform.platform_type == "Ground" %}
+      <img
+        class="platform-image"
+        src="https://www.ruralswalabama.org/wp-content/uploads/2011/11/Gilbertown-Oil-Well_1ce-866.jpg"
+        alt="oil_ground"
+      />
+      {% else %}
+      <img
+        class="platform-image"
+        src="https://images.fineartamerica.com/images/artworkimages/mediumlarge/2/2-oil-industry-well-pumps-pgiam.jpg"
+        alt="oil_pump"
+      />
+      {% endif %}
 
-            {% if platform.platform_type == "Rig" %}
-                <img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Oil_platform_P-51_%28Brazil%29.jpg" alt="oil_rig">
-            {% elif platform.platform_type == "Ground" %}
-                <img src="https://www.ruralswalabama.org/wp-content/uploads/2011/11/Gilbertown-Oil-Well_1ce-866.jpg" alt="oil_ground">
-            {% else %}
-                <img src="https://images.fineartamerica.com/images/artworkimages/mediumlarge/2/2-oil-industry-well-pumps-pgiam.jpg" alt="oil_pump">
-            {% endif %}
+      <p style="margin-left: 10px">
+        LVL: <b style="color: #3498db">{{ platform.platform_level }}</b>
+      </p>
+      <p style="margin-left: 10px">
+        Profitability:
+        <b style="color: #3498db">${{ platform.profitability }} / 10s</b>
+      </p>
 
-            <p>LVL: <b>{{ platform.platform_level }}</b></p>
-            <p>Profitability: <b>${{ platform.profitability }} / 10s</b></p>
-
-            {% if platform.platform_level == 10 %}
-                <p style="color: lightgreen;">MAX LVL. REACHED</p>
-            {% else %}
-                <form action="/platforms/edit/{{ platform.id }}" method="post">
-                    <input type="submit" value="Upgrade">
-                </form>
-            {% endif %}
-        </div>
+      {% if platform.platform_level == 10 %}
+      <p style="color: lightgreen; margin-left: 10px">MAX LVL. REACHED</p>
+      {% else %}
+      <form action="/platforms/edit/{{ platform.id }}" method="post">
+        <input
+          style="margin-left: 10px"
+          class="button-link"
+          type="submit"
+          value="Upgrade"
+        />
+      </form>
+      {% endif %}
+    </div>
     {% endfor %}
+  </div>
 
-    <!-- Beers section -->
-    <h1>Beers</h1>
-    <h3>Purchase all these beers to WIN the game!</h3>
+  <!-- Beers section -->
+  <h1>Beers</h1>
+  <h3>Purchase all these beers to WIN the game!</h3>
 
+  <div class="beer-grid-container">
     {% for beer in beers %}
-        <div>
-            <h5>{{ beer.title }}</h5>
-            <img src="{{ beer.thumbnail }}" alt="{{ beer.id }}" >
-            <p>{{ beer.description }}</p>
-            <p>Cost: <b>$ {{ beer.cost }}</b></p>
-            <!-- style it better -->
-            {% if beer.purchased %}
-                <p style="color: lightgreen;">PURCHASED</p>
-            {% else %}
-                <form action="/beers/{{ beer.id }}" method="post">
-                    <input type="submit" value="Purchase">
-                </form>
-            {% endif %}
-        </div>
+    <div class="grid-item">
+      <h5>{{ beer.title }}</h5>
+      <img class="beer-image" src="{{ beer.thumbnail }}" alt="{{ beer.id }}" />
+      <p>{{ beer.description }}</p>
+      <p>Cost: <b>$ {{ beer.cost }}</b></p>
+      <!-- style it better -->
+      {% if beer.purchased %}
+      <p style="color: lightgreen">PURCHASED</p>
+      {% else %}
+      <form action="/beers/{{ beer.id }}" method="post">
+        <input class="button-link" type="submit" value="Purchase" />
+      </form>
+      {% endif %}
+    </div>
     {% endfor %}
+  </div>
+</div>
 {% endblock content %}

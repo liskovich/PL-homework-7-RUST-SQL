@@ -1,41 +1,129 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <title>HW 7 - Rust game</title>
-    </head>
-    <body>
-        {% include "nav" %}
+  <head>
+    <meta charset="utf-8" />
+    <title>HW 7 - Rust game</title>
+    <style>
+      body {
+        background-color: #333;
+        color: white;
+        margin: 0;
+      }
 
-        <h2>Your balance:</h2>
-        <h3 id="balance">Balance:</h3>
-        <h1 style="color: lightgreen;" id="justEarned">Just Earned:</h1>
+      .platform-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+      }
 
-        {% block content %}{% endblock content %}
+      .beer-image {
+        width: 100%;
+        height: 350px;
+        object-fit: cover;
+        background-color: white;
+      }
 
-        <footer>
-            <a href="/">Home</a>
-        </footer>
-        <script src="/public/websocketManager.js"></script>
-        <script>
-            const wsManager = WebSocketManager.getInstance('ws://127.0.0.1:3030/game-state');
-    
-            wsManager.handleWebSocketEvents((data) => {
-                const parsedData = JSON.parse(data);            
-                document.getElementById('balance').innerText = `Balance: $ ${parsedData.balance}`;
+      .button-link {
+        display: inline-block;
+        padding: 10px 20px;
+        text-decoration: none;
+        background-color: #3498db;
+        color: #fff;
+        border: 1px solid #3498db;
+        transition: background-color 0.3s ease-in-out;
+      }
 
-                const justEarnedElement = document.getElementById('justEarned');
-                justEarnedElement.innerText = `+ $ ${parsedData.just_earned}`;
+      .button-link:hover {
+        cursor: pointer;
+      }
 
-                justEarnedElement.style.visibility = 'visible';
-                setTimeout(() => {
-                    justEarnedElement.style.visibility = 'hidden';
-                }, 1000);
-            });
+      .balance-card {
+        width: 500px;
+        margin-top: 20px;
+        padding-top: 15px;
+        text-align: center;
+        background-color: gray;
+        border: 1px solid darkblue;
+      }
 
-            window.addEventListener('beforeunload', function () {
-                wsManager.closeConnection();
-            });
-        </script>
-    </body>
+      .balance-card-text {
+        color: darkblue;
+      }
+
+      .container {
+        display: grid;
+        place-items: center;
+        height: 100vh;
+      }
+
+      .page-content {
+        width: 100%;
+        max-width: 1000px;
+        min-width: 300px;
+      }
+
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+
+      .grid-item {
+        border: 1px solid darkblue;
+      }
+
+      .beer-grid-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+      }
+
+      .beer-grid-item {
+        border: 1px solid brown;
+      }
+    </style>
+  </head>
+  <body>
+    {% include "nav" %}
+
+    <div class="container">
+      <div class="balance-card">
+        <b class="balance-card-text">Your balance:</b>
+        <h1 class="balance-card-text" id="balance">$ Balance</h1>
+        <h1 style="color: lightgreen" id="justEarned">+ $ Just Earned</h1>
+      </div>
+      {% block content %}{% endblock content %}
+      <footer style="margin-top: 20px">
+        <a style="color: #3498db" href="/"
+          ><h3 style="margin-bottom: 50px">Home</h3></a
+        >
+      </footer>
+    </div>
+
+    <script src="/public/websocketManager.js"></script>
+    <script>
+      const wsManager = WebSocketManager.getInstance(
+        "ws://127.0.0.1:3030/game-state"
+      );
+
+      wsManager.handleWebSocketEvents((data) => {
+        const parsedData = JSON.parse(data);
+        document.getElementById(
+          "balance"
+        ).innerText = `Balance: $ ${parsedData.balance}`;
+
+        const justEarnedElement = document.getElementById("justEarned");
+        justEarnedElement.innerText = `+ $ ${parsedData.just_earned}`;
+
+        justEarnedElement.style.visibility = "visible";
+        setTimeout(() => {
+          justEarnedElement.style.visibility = "hidden";
+        }, 1000);
+      });
+
+      window.addEventListener("beforeunload", function () {
+        wsManager.closeConnection();
+      });
+    </script>
+  </body>
 </html>
