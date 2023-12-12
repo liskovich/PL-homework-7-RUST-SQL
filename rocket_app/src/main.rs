@@ -1,10 +1,7 @@
-mod game_loop;
 mod handler;
 mod helper;
 mod schema;
 mod ui_handler;
-
-use game_loop::game_earnings_stream;
 
 use dotenv::dotenv;
 
@@ -119,7 +116,6 @@ async fn main() -> Result<(), rocket::Error> {
         .mount(
             "/",
             routes![
-                game_earnings_stream,
                 index_handler,
                 get_create_platform_ui_handler,
                 create_platform_ui_handler,
