@@ -1,0 +1,3 @@
+mod beer_repo_unit_tests;
+mod platform_repo_unit_tests;
+mod transaction_repo_unit_tests;
