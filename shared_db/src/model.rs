@@ -15,14 +15,14 @@ pub struct OilPlatformModel {
     pub updated_at: Option<i64>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[allow(non_snake_case)]
 pub struct CreatePlatformModel {
     pub platform_type: PlatformType,
     pub profitability: i64,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct UpdatePlatformModel {
     pub profitability_addition: i64,
 }
@@ -75,7 +75,7 @@ pub struct MoneyTransactionModel {
     pub updated_at: Option<i64>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct CreateMoneyTransactionModel {
     pub item_id: Option<Uuid>,
     pub amount: i64,
