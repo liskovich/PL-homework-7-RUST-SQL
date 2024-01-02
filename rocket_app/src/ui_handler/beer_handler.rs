@@ -1,8 +1,9 @@
-use crate::AppRepositories;
-use rocket::{response::Redirect, State};
+use rocket::{post, response::Redirect, State};
 use rocket_dyn_templates::{context, Template};
 use shared_db::{model::CreateMoneyTransactionModel, repo::beer_repo::BeerError};
 use uuid::Uuid;
+
+use crate::schema::AppRepositories;
 
 #[post("/beers/<id>")]
 pub async fn purchase_beer_ui_handler(

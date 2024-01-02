@@ -1,3 +1,4 @@
+use async_trait::async_trait;
 use sqlx::{Error as SqlxError, PgPool};
 use uuid::Uuid;
 
@@ -24,6 +25,13 @@ impl std::fmt::Display for BeerError {
 
 impl std::error::Error for BeerError {}
 
+#[async_trait]
+pub trait BeerRepoTrait: Send + Sync {
+    async fn get_by_id(&self, id: Uuid) -> Result<BeerModel, BeerError>;
+    async fn get_all(&self) -> Result<Vec<BeerModel>, BeerError>;
+    async fn purchase(&self, id: Uuid) -> Result<BeerModel, BeerError>;
+}
+
 pub struct BeerRepo {
     pool: PgPool,
 }
@@ -32,8 +40,11 @@ impl BeerRepo {
     pub fn new(pool: PgPool) -> Self {
         BeerRepo { pool }
     }
+}
 
-    pub async fn get_by_id(&self, id: Uuid) -> Result<BeerModel, BeerError> {
+#[async_trait]
+impl BeerRepoTrait for BeerRepo {
+    async fn get_by_id(&self, id: Uuid) -> Result<BeerModel, BeerError> {
         let query_result = match sqlx::query_as!(BeerModel, "SELECT * FROM beers WHERE id = $1", id)
             .fetch_one(&self.pool)
             .await
@@ -46,7 +57,7 @@ impl BeerRepo {
         Ok(query_result)
     }
 
-    pub async fn get_all(&self) -> Result<Vec<BeerModel>, BeerError> {
+    async fn get_all(&self) -> Result<Vec<BeerModel>, BeerError> {
         let query_result = match sqlx::query_as!(BeerModel, "SELECT * FROM beers ORDER BY cost ASC")
             .fetch_all(&self.pool)
             .await
@@ -59,7 +70,7 @@ impl BeerRepo {
         Ok(query_result)
     }
 
-    pub async fn purchase(&self, id: Uuid) -> Result<BeerModel, BeerError> {
+    async fn purchase(&self, id: Uuid) -> Result<BeerModel, BeerError> {
         let query_result = match sqlx::query_as!(BeerModel, "SELECT * FROM beers WHERE id = $1", id)
             .fetch_one(&self.pool)
             .await

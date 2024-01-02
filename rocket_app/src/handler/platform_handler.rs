@@ -2,16 +2,18 @@ use std::panic;
 
 use crate::{
     helper::{get_platform_cost, get_platform_profitability, get_platform_upgrade_cost},
-    schema::{CreatePlatformSchema, GenericResponse, PlatformListResponse, SinglePlatformResponse},
-    AppRepositories,
+    schema::{
+        AppRepositories, CreatePlatformSchema, GenericResponse, PlatformListResponse,
+        SinglePlatformResponse,
+    },
 };
 
 use shared_db::{
     model::{CreateMoneyTransactionModel, CreatePlatformModel, UpdatePlatformModel},
-    repo::{generic::Repo, platform_repo::OilPlatformError},
+    repo::platform_repo::OilPlatformError,
 };
 
-use rocket::{get, http::Status, post, response::status::Custom, serde::json::Json, State};
+use rocket::{get, http::Status, patch, post, response::status::Custom, serde::json::Json, State};
 use uuid::Uuid;
 
 #[get("/health")]

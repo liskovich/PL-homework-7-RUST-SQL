@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use shared_db::{model::CreateMoneyTransactionModel, repo::transactions_repo::TransactionsRepo};
+use shared_db::{model::CreateMoneyTransactionModel, repo::transactions_repo::{TransactionsRepo, TransactionsRepoTrait}};
 use sqlx::postgres::PgPoolOptions;
 use uuid::Uuid;
 
