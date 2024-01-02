@@ -1,6 +1,10 @@
 #[cfg(test)]
-use mockall::{mock, predicate::*};
-use shared_db::repo::transactions_repo::MoneyTransactionError;
+use mockall::predicate::*;
+use rocket::http::{ContentType, Status};
+use rocket_app::schema::{
+    AppRepositories, CreatePlatformSchema, GenericResponse, PlatformListResponse,
+    SinglePlatformResponse,
+};
 use uuid::Uuid;
 
 use shared_db::model::{
@@ -9,80 +13,17 @@ use shared_db::model::{
 };
 use shared_db::repo::platform_repo::OilPlatformError;
 
-mock! {
-    pub OilPlaftormRepo {
-        async fn get_by_id(&self, id: Uuid) -> Result<OilPlatformModel, OilPlatformError>;
-        async fn get_all(&self) -> Result<Vec<OilPlatformModel>, OilPlatformError>;
-        async fn create(&self, item: CreatePlatformModel) -> Result<OilPlatformModel, OilPlatformError>;
-        async fn update(&self, id: Uuid, new_item: UpdatePlatformModel) -> Result<OilPlatformModel, OilPlatformError>;
-    }
-}
+use crate::test_util::{
+    aget_rocket_client, MockBeerRepo, MockOilPlaftormRepo, MockTransactionsRepo,
+};
 
-#[tokio::test]
-async fn test_get_platform_by_id() {
-    let mut repo = MockOilPlaftormRepo::new();
+#[rocket::async_test]
+async fn test_platforms_list_handler() {
+    let mut platform_repo = MockOilPlaftormRepo::new();
+    let beer_repo = MockBeerRepo::new();
+    let finances_repo = MockTransactionsRepo::new();
 
-    let expected_id = Uuid::new_v4();
-    repo.expect_get_by_id()
-        .with(eq(expected_id))
-        .once()
-        .returning(|id| {
-            Ok(OilPlatformModel {
-                id: id,
-                platform_type: PlatformType::Ground,
-                platform_level: 1,
-                profitability: 10,
-                created_at: Some(12345),
-                updated_at: Some(12345),
-            })
-        });
-
-    let result = repo.get_by_id(expected_id).await;
-    assert!(result.is_ok());
-    let platform = result.unwrap();
-    assert_eq!(platform.id, expected_id);
-    assert_eq!(platform.platform_type, PlatformType::Ground);
-    assert_eq!(platform.platform_level, 1);
-    assert_eq!(platform.profitability, 10);
-    assert_eq!(platform.created_at, Some(12345));
-    assert_eq!(platform.updated_at, Some(12345));
-}
-
-#[tokio::test]
-async fn test_create_platform() {
-    let mut repo = MockOilPlaftormRepo::new();
-
-    let platform_to_create = CreatePlatformModel {
-        platform_type: PlatformType::Rig,
-        profitability: 100,
-    };
-    repo.expect_create()
-        .with(eq(platform_to_create.clone()))
-        .once()
-        .returning(|item| {
-            Ok(OilPlatformModel {
-                id: Uuid::new_v4(),
-                platform_type: item.platform_type,
-                platform_level: 0,
-                profitability: item.profitability,
-                created_at: Some(12345),
-                updated_at: Some(12345),
-            })
-        });
-    let result = repo.create(platform_to_create).await;
-    assert!(result.is_ok());
-    let platform = result.unwrap();
-    assert_eq!(platform.platform_type, PlatformType::Rig);
-    assert_eq!(platform.platform_level, 0);
-    assert_eq!(platform.profitability, 100);
-    assert_eq!(platform.created_at, Some(12345));
-    assert_eq!(platform.updated_at, Some(12345));
-}
-
-#[tokio::test]
-async fn test_get_all_platforms() {
-    let mut repo = MockOilPlaftormRepo::new();
-    repo.expect_get_all().once().returning(|| {
+    platform_repo.expect_get_all().once().returning(|| {
         Ok(vec![
             OilPlatformModel {
                 id: Uuid::new_v4(),
@@ -103,203 +44,341 @@ async fn test_get_all_platforms() {
         ])
     });
 
-    let result = repo.get_all().await;
-    assert!(result.is_ok());
-    let platforms = result.unwrap();
-    assert_eq!(platforms.len(), 2);
+    let repos = AppRepositories {
+        platform_repo: Box::new(platform_repo),
+        beer_repo: Box::new(beer_repo),
+        finances_repo: Box::new(finances_repo),
+    };
+    let client = aget_rocket_client(repos).await;
+    let response = client.get("/api/platforms").dispatch().await;
+    assert_eq!(response.status(), Status::Ok);
+    assert_eq!(response.content_type(), Some(ContentType::JSON));
 
-    let first = &platforms[0];
-    assert_eq!(first.platform_type, PlatformType::Ground);
-    assert_eq!(first.platform_level, 1);
-    assert_eq!(first.profitability, 10);
-    assert_eq!(first.created_at, Some(12345));
-    assert_eq!(first.updated_at, Some(12345));
-    let second = &platforms[1];
-    assert_eq!(second.platform_type, PlatformType::Pump);
-    assert_eq!(second.platform_level, 2);
-    assert_eq!(second.profitability, 20);
-    assert_eq!(second.created_at, Some(54321));
-    assert_eq!(second.updated_at, Some(54321));
+    let serialized_platforms: PlatformListResponse =
+        serde_json::from_str(&response.into_string().await.unwrap()).unwrap();
+
+    assert_eq!(serialized_platforms.status, "success");
+    assert_eq!(serialized_platforms.results, 2);
+
+    let first = &serialized_platforms.platforms[1];
+    assert_eq!(first.platform_type, PlatformType::Pump);
+    assert_eq!(first.platform_level, 2);
+    assert_eq!(first.profitability, 20);
+    assert_eq!(first.created_at, Some(54321));
+    assert_eq!(first.updated_at, Some(54321));
+    let second = &serialized_platforms.platforms[0];
+    assert_eq!(second.platform_type, PlatformType::Ground);
+    assert_eq!(second.platform_level, 1);
+    assert_eq!(second.profitability, 10);
+    assert_eq!(second.created_at, Some(12345));
+    assert_eq!(second.updated_at, Some(12345));
 }
 
-#[tokio::test]
-async fn test_update_platform_success() {
-    let mut repo = MockOilPlaftormRepo::new();
+#[rocket::async_test]
+async fn test_create_platform_handler_success() {
+    let mut platform_repo = MockOilPlaftormRepo::new();
+    let beer_repo = MockBeerRepo::new();
+    let mut finances_repo = MockTransactionsRepo::new();
 
-    let platform_to_update = UpdatePlatformModel {
-        profitability_addition: 10,
+    let platform_to_create = CreatePlatformModel {
+        platform_type: PlatformType::Rig,
+        profitability: 5,
     };
-    let expected_id = Uuid::new_v4();
-    repo.expect_update()
-        .with(eq(expected_id), eq(platform_to_update.clone()))
+    platform_repo
+        .expect_create()
+        .with(eq(platform_to_create))
         .once()
-        .returning(|id, item| {
+        .returning(|item| {
             Ok(OilPlatformModel {
-                id: id,
-                platform_type: PlatformType::Ground,
-                platform_level: 2,
-                profitability: 10 + item.profitability_addition,
+                id: Uuid::nil(),
+                platform_type: item.platform_type,
+                platform_level: 0,
+                profitability: item.profitability,
+                created_at: Some(12345),
+                updated_at: Some(12345),
+            })
+        });
+    finances_repo
+        .expect_get_available_balance()
+        .once()
+        .returning(|| Ok(2000));
+
+    let tx = CreateMoneyTransactionModel {
+        item_id: Some(Uuid::nil()),
+        amount: 1000,
+        reduces_balance: true,
+    };
+    finances_repo
+        .expect_create()
+        .with(eq(tx))
+        .once()
+        .returning(|tx| {
+            Ok(MoneyTransactionModel {
+                id: Uuid::new_v4(),
+                item_id: Uuid::nil(),
+                amount: tx.amount,
+                reduces_balance: tx.reduces_balance,
                 created_at: Some(12345),
                 updated_at: Some(12345),
             })
         });
 
-    let result = repo.update(expected_id, platform_to_update).await;
-    assert!(result.is_ok());
-    let platform = result.unwrap();
-    assert_eq!(platform.platform_type, PlatformType::Ground);
-    assert_eq!(platform.platform_level, 2);
-    assert_eq!(platform.profitability, 20);
+    let repos = AppRepositories {
+        platform_repo: Box::new(platform_repo),
+        beer_repo: Box::new(beer_repo),
+        finances_repo: Box::new(finances_repo),
+    };
+    let client = aget_rocket_client(repos).await;
+    let create_platform_request = CreatePlatformSchema {
+        platform_type: "Rig".to_string(),
+    };
+    let response = client
+        .post("/api/platforms")
+        .json(&create_platform_request)
+        .dispatch()
+        .await;
+    assert_eq!(response.status(), Status::Ok);
+    assert_eq!(response.content_type(), Some(ContentType::JSON));
+
+    let serialized_platform: SinglePlatformResponse =
+        serde_json::from_str(&response.into_string().await.unwrap()).unwrap();
+
+    assert_eq!(serialized_platform.status, "success");
+
+    let platform = &serialized_platform.data;
+    assert_eq!(platform.platform_type, PlatformType::Rig);
+    assert_eq!(platform.platform_level, 0);
+    assert_eq!(platform.profitability, 5);
     assert_eq!(platform.created_at, Some(12345));
     assert_eq!(platform.updated_at, Some(12345));
 }
 
-#[tokio::test]
-async fn test_update_platform_fail() {
-    let mut repo = MockOilPlaftormRepo::new();
+#[rocket::async_test]
+async fn test_create_platform_handler_insufficient_funds() {
+    let platform_repo = MockOilPlaftormRepo::new();
+    let beer_repo = MockBeerRepo::new();
+    let mut finances_repo = MockTransactionsRepo::new();
 
-    let platform_to_update = UpdatePlatformModel {
-        profitability_addition: 10,
+    finances_repo
+        .expect_get_available_balance()
+        .once()
+        .returning(|| Ok(500));
+
+    let repos = AppRepositories {
+        platform_repo: Box::new(platform_repo),
+        beer_repo: Box::new(beer_repo),
+        finances_repo: Box::new(finances_repo),
     };
-    let expected_id = Uuid::new_v4();
-    repo.expect_update()
-        .with(eq(expected_id), eq(platform_to_update.clone()))
-        .once()
-        .returning(|_, _| Err(OilPlatformError::MaxLevelReached));
-
-    let result = repo.update(expected_id, platform_to_update).await;
-    assert!(result.is_err());
-    let error = result.unwrap_err();
-    assert_eq!(
-        error.to_string(),
-        "Maximum upgrade level of platform reached"
-    );
-}
-
-// common transaction tests (for later use)
-mock! {
-    pub TransactionsRepo {
-        async fn get_available_balance(&self) -> Result<i64, MoneyTransactionError>;
-        async fn get_period_platform_earnings(&self) -> Result<i64, MoneyTransactionError>;
-        async fn get_all(&self) -> Result<Vec<MoneyTransactionModel>, MoneyTransactionError>;
-        async fn create(
-            &self,
-            item: CreateMoneyTransactionModel,
-        ) -> Result<MoneyTransactionModel, MoneyTransactionError>;
-    }
-}
-
-#[tokio::test]
-async fn test_get_available_balance() {
-    let mut repo = MockTransactionsRepo::new();
-
-    repo.expect_get_available_balance()
-        .once()
-        .returning(|| Ok(100));
-
-    let result = repo.get_available_balance().await;
-    assert!(result.is_ok());
-    let balance = result.unwrap();
-    assert!(balance.is_positive());
-    assert_eq!(balance, 100);
-}
-
-#[tokio::test]
-async fn test_get_period_platform_earnings() {
-    let mut repo = MockTransactionsRepo::new();
-
-    repo.expect_get_period_platform_earnings()
-        .once()
-        .returning(|| Ok(100));
-
-    let result = repo.get_period_platform_earnings().await;
-    assert!(result.is_ok());
-    let period_earnings = result.unwrap();
-    assert!(period_earnings.is_positive());
-    assert_eq!(period_earnings, 100);
-}
-
-#[tokio::test]
-async fn test_get_all() {
-    let mut repo = MockTransactionsRepo::new();
-
-    repo.expect_get_all().once().returning(|| {
-        Ok(vec![
-            MoneyTransactionModel {
-                id: Uuid::new_v4(),
-                item_id: Uuid::new_v4(),
-                amount: 100,
-                reduces_balance: false,
-                created_at: Some(12345),
-                updated_at: Some(12345),
-            },
-            MoneyTransactionModel {
-                id: Uuid::new_v4(),
-                item_id: Uuid::new_v4(),
-                amount: 10,
-                reduces_balance: true,
-                created_at: Some(54321),
-                updated_at: Some(54321),
-            },
-        ])
-    });
-
-    // Test the get_all function
-    let result = repo.get_all().await;
-    assert!(result.is_ok());
-    let transactions = result.unwrap();
-    let first = &transactions[0];
-    assert_eq!(first.amount, 100);
-    assert_eq!(first.reduces_balance, false);
-    assert_eq!(first.created_at, Some(12345));
-    assert_eq!(first.updated_at, Some(12345));
-    let second = &transactions[1];
-    assert_eq!(second.amount, 10);
-    assert_eq!(second.reduces_balance, true);
-    assert_eq!(second.created_at, Some(54321));
-    assert_eq!(second.updated_at, Some(54321));
-}
-
-#[tokio::test]
-async fn test_create_increases_balance() {
-    let mut repo = MockTransactionsRepo::new();
-
-    repo.expect_get_available_balance()
-        .once()
-        .returning(|| Ok(100));
-    let balance_before = repo.get_available_balance().await.unwrap();
-    assert_eq!(balance_before, 100);
-
-    let sample_model = CreateMoneyTransactionModel {
-        item_id: None,
-        amount: 100,
-        reduces_balance: false,
+    let client = aget_rocket_client(repos).await;
+    let create_platform_request = CreatePlatformSchema {
+        platform_type: "Rig".to_string(),
     };
-    repo.expect_create()
-        .with(eq(sample_model.clone()))
+    let response = client
+        .post("/api/platforms")
+        .json(&create_platform_request)
+        .dispatch()
+        .await;
+    assert_eq!(response.status(), Status::BadRequest);
+    assert_eq!(response.content_type(), Some(ContentType::JSON));
+
+    let serialized_platform: GenericResponse =
+        serde_json::from_str(&response.into_string().await.unwrap()).unwrap();
+
+    assert_eq!(serialized_platform.status, "error");
+    assert_eq!(serialized_platform.message, "Not enough funds for purchase");
+}
+
+#[rocket::async_test]
+async fn test_edit_platform_handler_success() {
+    let mut platform_repo = MockOilPlaftormRepo::new();
+    let beer_repo = MockBeerRepo::new();
+    let mut finances_repo = MockTransactionsRepo::new();
+
+    let expected_id = Uuid::nil();
+    platform_repo
+        .expect_get_by_id()
+        .with(eq(expected_id))
         .once()
-        .returning(move |tx| {
-            Ok(MoneyTransactionModel {
-                item_id: Uuid::nil(),
-                amount: tx.amount,
-                reduces_balance: tx.reduces_balance,
-                id: Uuid::new_v4(),
+        .returning(|id| {
+            Ok(OilPlatformModel {
+                id: id,
+                platform_type: PlatformType::Rig,
+                platform_level: 0,
+                profitability: 5,
                 created_at: Some(12345),
                 updated_at: Some(12345),
             })
         });
 
-    let result = repo.create(sample_model).await;
-    assert!(result.is_ok());
-    let transaction = result.unwrap();
-    assert_eq!(transaction.amount, 100);
-    assert_eq!(transaction.reduces_balance, false);
-    assert_eq!(transaction.created_at, Some(12345));
-    assert_eq!(transaction.updated_at, Some(12345));
-
-    repo.expect_get_available_balance()
+    let platform_to_update = UpdatePlatformModel {
+        profitability_addition: 5,
+    };
+    platform_repo
+        .expect_update()
+        .with(eq(expected_id), eq(platform_to_update))
         .once()
-        .returning(|| Ok(200));
-    let balance_after = repo.get_available_balance().await.unwrap();
-    assert_eq!(balance_after, 200);
+        .returning(|id, item| {
+            Ok(OilPlatformModel {
+                id: id,
+                platform_type: PlatformType::Rig,
+                platform_level: 1,
+                profitability: 5 + item.profitability_addition,
+                created_at: Some(12345),
+                updated_at: Some(12345),
+            })
+        });
+    finances_repo
+        .expect_get_available_balance()
+        .once()
+        .returning(|| Ok(2000));
+
+    let tx = CreateMoneyTransactionModel {
+        item_id: Some(Uuid::nil()),
+        amount: 100,
+        reduces_balance: true,
+    };
+    finances_repo
+        .expect_create()
+        .with(eq(tx))
+        .once()
+        .returning(|tx| {
+            Ok(MoneyTransactionModel {
+                id: Uuid::new_v4(),
+                item_id: Uuid::nil(),
+                amount: tx.amount,
+                reduces_balance: tx.reduces_balance,
+                created_at: Some(12345),
+                updated_at: Some(12345),
+            })
+        });
+
+    let repos = AppRepositories {
+        platform_repo: Box::new(platform_repo),
+        beer_repo: Box::new(beer_repo),
+        finances_repo: Box::new(finances_repo),
+    };
+    let client = aget_rocket_client(repos).await;
+    let response = client
+        .patch(format!("/api/platforms/{}", expected_id))
+        .dispatch()
+        .await;
+    assert_eq!(response.status(), Status::Ok);
+    assert_eq!(response.content_type(), Some(ContentType::JSON));
+
+    let serialized_platform: SinglePlatformResponse =
+        serde_json::from_str(&response.into_string().await.unwrap()).unwrap();
+
+    assert_eq!(serialized_platform.status, "success");
+
+    let platform = &serialized_platform.data;
+    assert_eq!(platform.platform_type, PlatformType::Rig);
+    assert_eq!(platform.platform_level, 1);
+    assert_eq!(platform.profitability, 10);
+    assert_eq!(platform.created_at, Some(12345));
+    assert_eq!(platform.updated_at, Some(12345));
+}
+
+#[rocket::async_test]
+async fn test_edit_platform_handler_max_level() {
+    let mut platform_repo = MockOilPlaftormRepo::new();
+    let beer_repo = MockBeerRepo::new();
+    let mut finances_repo = MockTransactionsRepo::new();
+
+    let expected_id = Uuid::nil();
+    platform_repo
+        .expect_get_by_id()
+        .with(eq(expected_id))
+        .once()
+        .returning(|id| {
+            Ok(OilPlatformModel {
+                id: id,
+                platform_type: PlatformType::Rig,
+                platform_level: 0,
+                profitability: 5,
+                created_at: Some(12345),
+                updated_at: Some(12345),
+            })
+        });
+
+    let platform_to_update = UpdatePlatformModel {
+        profitability_addition: 5,
+    };
+    platform_repo
+        .expect_update()
+        .with(eq(expected_id), eq(platform_to_update))
+        .once()
+        .returning(|_, _| Err(OilPlatformError::MaxLevelReached));
+    finances_repo
+        .expect_get_available_balance()
+        .once()
+        .returning(|| Ok(2000));
+
+    let repos = AppRepositories {
+        platform_repo: Box::new(platform_repo),
+        beer_repo: Box::new(beer_repo),
+        finances_repo: Box::new(finances_repo),
+    };
+    let client = aget_rocket_client(repos).await;
+    let response = client
+        .patch(format!("/api/platforms/{}", expected_id))
+        .dispatch()
+        .await;
+    assert_eq!(response.status(), Status::BadRequest);
+    assert_eq!(response.content_type(), Some(ContentType::JSON));
+
+    let serialized_platform: GenericResponse =
+        serde_json::from_str(&response.into_string().await.unwrap()).unwrap();
+
+    assert_eq!(serialized_platform.status, "error");
+    assert_eq!(
+        serialized_platform.message,
+        "You have already upgraded the platform to the maximum"
+    );
+}
+
+#[rocket::async_test]
+async fn test_edit_platform_handler_insufficient_funds() {
+    let mut platform_repo = MockOilPlaftormRepo::new();
+    let beer_repo = MockBeerRepo::new();
+    let mut finances_repo = MockTransactionsRepo::new();
+
+    let expected_id = Uuid::nil();
+    platform_repo
+        .expect_get_by_id()
+        .with(eq(expected_id))
+        .once()
+        .returning(|id| {
+            Ok(OilPlatformModel {
+                id: id,
+                platform_type: PlatformType::Rig,
+                platform_level: 0,
+                profitability: 5,
+                created_at: Some(12345),
+                updated_at: Some(12345),
+            })
+        });
+
+    finances_repo
+        .expect_get_available_balance()
+        .once()
+        .returning(|| Ok(20));
+
+    let repos = AppRepositories {
+        platform_repo: Box::new(platform_repo),
+        beer_repo: Box::new(beer_repo),
+        finances_repo: Box::new(finances_repo),
+    };
+    let client = aget_rocket_client(repos).await;
+    let response = client
+        .patch(format!("/api/platforms/{}", expected_id))
+        .dispatch()
+        .await;
+    assert_eq!(response.status(), Status::BadRequest);
+    assert_eq!(response.content_type(), Some(ContentType::JSON));
+
+    let serialized_platform: GenericResponse =
+        serde_json::from_str(&response.into_string().await.unwrap()).unwrap();
+
+    assert_eq!(serialized_platform.status, "error");
+    assert_eq!(serialized_platform.message, "Not enough funds for purchase");
 }
