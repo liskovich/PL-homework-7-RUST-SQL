@@ -1,7 +1,7 @@
 use sqlx::PgPool;
 
 use shared_db::model::CreateMoneyTransactionModel;
-use shared_db::repo::transactions_repo::TransactionsRepo;
+use shared_db::repo::transactions_repo::{TransactionsRepo, TransactionsRepoTrait};
 
 #[sqlx::test(fixtures("transactions"))]
 async fn test_get_available_balance(pool: PgPool) -> sqlx::Result<()> {

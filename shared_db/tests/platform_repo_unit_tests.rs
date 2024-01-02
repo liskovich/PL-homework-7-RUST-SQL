@@ -1,7 +1,8 @@
 use std::str::FromStr;
 
 use shared_db::model::{CreatePlatformModel, PlatformType, UpdatePlatformModel};
-use shared_db::repo::{generic::Repo, platform_repo::OilPlaftormRepo};
+use shared_db::repo::platform_repo::OilPlaftormRepoTrait;
+use shared_db::repo::platform_repo::OilPlaftormRepo;
 use sqlx::PgPool;
 use uuid::Uuid;
 

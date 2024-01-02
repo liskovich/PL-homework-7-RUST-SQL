@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use shared_db::repo::beer_repo::BeerRepo;
+use shared_db::repo::beer_repo::{BeerRepo, BeerRepoTrait};
 use sqlx::PgPool;
 use uuid::Uuid;
 
