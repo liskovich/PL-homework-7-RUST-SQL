@@ -6,8 +6,6 @@ use uuid::Uuid;
 use crate::constants::MAX_PLATFORM_LEVEL;
 use crate::model::{CreatePlatformModel, OilPlatformModel, UpdatePlatformModel};
 
-use super::generic::Repo;
-
 #[derive(Debug)]
 pub enum OilPlatformError {
     NotFound,
@@ -29,23 +27,31 @@ impl std::fmt::Display for OilPlatformError {
 
 impl std::error::Error for OilPlatformError {}
 
+#[async_trait]
+pub trait OilPlaftormRepoTrait: Send + Sync {
+    async fn get_by_id(&self, id: Uuid) -> Result<OilPlatformModel, OilPlatformError>;
+    async fn get_all(&self) -> Result<Vec<OilPlatformModel>, OilPlatformError>;
+    async fn create(&self, item: CreatePlatformModel)
+        -> Result<OilPlatformModel, OilPlatformError>;
+    async fn update(
+        &self,
+        id: Uuid,
+        new_item: UpdatePlatformModel,
+    ) -> Result<OilPlatformModel, OilPlatformError>;
+}
+
 pub struct OilPlaftormRepo {
     pool: PgPool,
 }
 
-#[async_trait]
-impl Repo<OilPlatformModel, CreatePlatformModel, UpdatePlatformModel> for OilPlaftormRepo {
-    type Error = OilPlatformError;
-    type Pool = PgPool;
-
-    fn new(pool: Self::Pool) -> Self {
+impl OilPlaftormRepo {
+    pub fn new(pool: PgPool) -> Self {
         OilPlaftormRepo { pool }
     }
+}
 
-    fn get_pool(&self) -> Self::Pool {
-        self.pool.clone()
-    }
-
+#[async_trait]
+impl OilPlaftormRepoTrait for OilPlaftormRepo {
     async fn get_by_id(&self, id: Uuid) -> Result<OilPlatformModel, OilPlatformError> {
         let query_result = match sqlx::query_as!(
             OilPlatformModel,

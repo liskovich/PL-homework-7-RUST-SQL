@@ -1,7 +1,6 @@
-use crate::AppRepositories;
+use crate::schema::AppRepositories;
 use rocket::{get, State};
 use rocket_dyn_templates::{context, Template};
-use shared_db::repo::generic::Repo;
 
 #[get("/")]
 pub async fn index_handler(data: &State<AppRepositories>) -> Template {

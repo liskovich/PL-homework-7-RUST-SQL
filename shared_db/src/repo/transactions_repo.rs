@@ -1,3 +1,4 @@
+use async_trait::async_trait;
 use sqlx::PgPool;
 use uuid::Uuid;
 
@@ -20,6 +21,17 @@ impl std::fmt::Display for MoneyTransactionError {
 
 impl std::error::Error for MoneyTransactionError {}
 
+#[async_trait]
+pub trait TransactionsRepoTrait: Send + Sync {
+    async fn get_available_balance(&self) -> Result<i64, MoneyTransactionError>;
+    async fn get_period_platform_earnings(&self) -> Result<i64, MoneyTransactionError>;
+    async fn get_all(&self) -> Result<Vec<MoneyTransactionModel>, MoneyTransactionError>;
+    async fn create(
+        &self,
+        item: CreateMoneyTransactionModel,
+    ) -> Result<MoneyTransactionModel, MoneyTransactionError>;
+}
+
 pub struct TransactionsRepo {
     pool: PgPool,
 }
@@ -28,8 +40,11 @@ impl TransactionsRepo {
     pub fn new(pool: PgPool) -> Self {
         TransactionsRepo { pool }
     }
+}
 
-    pub async fn get_available_balance(&self) -> Result<i64, MoneyTransactionError> {
+#[async_trait]
+impl TransactionsRepoTrait for TransactionsRepo {
+    async fn get_available_balance(&self) -> Result<i64, MoneyTransactionError> {
         let query_result =
             match sqlx::query_as!(NumericHandler, "SELECT CAST(SUM(CASE WHEN reduces_balance = FALSE THEN amount ELSE -amount END) AS DECIMAL) AS calculation FROM money_transactions")
                 .fetch_one(&self.pool)
@@ -49,7 +64,7 @@ impl TransactionsRepo {
         }
     }
 
-    pub async fn get_period_platform_earnings(&self) -> Result<i64, MoneyTransactionError> {
+    async fn get_period_platform_earnings(&self) -> Result<i64, MoneyTransactionError> {
         let query_result = match sqlx::query_as!(
             NumericHandler,
             "SELECT SUM(profitability) AS calculation FROM oil_platforms",
@@ -71,7 +86,7 @@ impl TransactionsRepo {
         }
     }
 
-    pub async fn get_all(&self) -> Result<Vec<MoneyTransactionModel>, MoneyTransactionError> {
+    async fn get_all(&self) -> Result<Vec<MoneyTransactionModel>, MoneyTransactionError> {
         let query_result =
             match sqlx::query_as!(MoneyTransactionModel, "SELECT * FROM money_transactions")
                 .fetch_all(&self.pool)
@@ -83,7 +98,7 @@ impl TransactionsRepo {
         Ok(query_result)
     }
 
-    pub async fn create(
+    async fn create(
         &self,
         item: CreateMoneyTransactionModel,
     ) -> Result<MoneyTransactionModel, MoneyTransactionError> {

@@ -1,5 +1,12 @@
+use rocket::FromForm;
 use serde::{Deserialize, Serialize};
-use shared_db::model::{BeerModel, OilPlatformModel};
+use shared_db::{
+    model::{BeerModel, OilPlatformModel},
+    repo::{
+        beer_repo::BeerRepoTrait, platform_repo::OilPlaftormRepoTrait,
+        transactions_repo::TransactionsRepoTrait,
+    },
+};
 
 // requests
 #[derive(Deserialize, Debug, Clone)]
@@ -55,4 +62,10 @@ pub struct BeerListResponse {
 pub struct GenericResponse {
     pub status: String,
     pub message: String,
+}
+
+pub struct AppRepositories {
+    pub platform_repo: Box<dyn OilPlaftormRepoTrait>,
+    pub beer_repo: Box<dyn BeerRepoTrait>,
+    pub finances_repo: Box<dyn TransactionsRepoTrait>,
 }

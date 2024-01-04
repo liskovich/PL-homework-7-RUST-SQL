@@ -5,9 +5,9 @@ mod ui_handler;
 
 use dotenv::dotenv;
 
+use schema::AppRepositories;
 use shared_db::repo::{
-    beer_repo::BeerRepo, generic::Repo, platform_repo::OilPlaftormRepo,
-    transactions_repo::TransactionsRepo,
+    beer_repo::BeerRepo, platform_repo::OilPlaftormRepo, transactions_repo::TransactionsRepo,
 };
 
 use helper::seed_game_entities;
@@ -37,20 +37,14 @@ use ui_handler::{
     },
 };
 
-struct AppRepositories {
-    platform_repo: OilPlaftormRepo,
-    beer_repo: BeerRepo,
-    finances_repo: TransactionsRepo,
-}
-
 async fn initialize_repositories(pool: &PgPool) -> AppRepositories {
     let platform_repo = OilPlaftormRepo::new(pool.clone());
     let beer_repo = BeerRepo::new(pool.clone());
     let finances_repo = TransactionsRepo::new(pool.clone());
     AppRepositories {
-        platform_repo,
-        beer_repo,
-        finances_repo,
+        platform_repo: Box::new(platform_repo),
+        beer_repo: Box::new(beer_repo),
+        finances_repo: Box::new(finances_repo),
     }
 }
 
