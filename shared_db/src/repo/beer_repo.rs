@@ -44,6 +44,10 @@ impl BeerRepo {
 
 #[async_trait]
 impl BeerRepoTrait for BeerRepo {
+    /// Get specific beer
+    ///
+    /// Given the unique identifier of a beer, retrieves it from the database 'beers' table.
+    /// If the beer was not found, returns 'BeerError::NotFound' error.
     async fn get_by_id(&self, id: Uuid) -> Result<BeerModel, BeerError> {
         let query_result = match sqlx::query_as!(BeerModel, "SELECT * FROM beers WHERE id = $1", id)
             .fetch_one(&self.pool)
@@ -57,6 +61,9 @@ impl BeerRepoTrait for BeerRepo {
         Ok(query_result)
     }
 
+    /// Get all beers
+    ///
+    /// Retrieves a list of all beers from the database 'beers' table.
     async fn get_all(&self) -> Result<Vec<BeerModel>, BeerError> {
         let query_result = match sqlx::query_as!(BeerModel, "SELECT * FROM beers ORDER BY cost ASC")
             .fetch_all(&self.pool)
@@ -70,6 +77,11 @@ impl BeerRepoTrait for BeerRepo {
         Ok(query_result)
     }
 
+    /// Purchase a beer
+    ///
+    /// Given the unique identifier of a beer, retrieves it from the database 'beers' table, checks whether it is not purchased yet, and if not, marks it as purchased in the database.
+    /// If the beer was not found, returns 'BeerError::NotFound' error.
+    /// If the beer was already purchased, returns 'BeerError::AlreadyPurchased' error.
     async fn purchase(&self, id: Uuid) -> Result<BeerModel, BeerError> {
         let query_result = match sqlx::query_as!(BeerModel, "SELECT * FROM beers WHERE id = $1", id)
             .fetch_one(&self.pool)

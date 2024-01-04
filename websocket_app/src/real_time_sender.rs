@@ -12,6 +12,10 @@ struct BalanceData {
     just_earned: i64,
 }
 
+/// Present real-time financial data
+///
+/// Retrieves oil platform earnings for the latest time period, creates a transaction to increase balance by the earnings amount
+/// and retrieves the updated balance. Displays recent platform earnings and available balance.
 pub async fn get_realtime_financial_data() -> String {
     // separate database connection for streams
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");

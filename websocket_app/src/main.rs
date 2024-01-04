@@ -11,6 +11,10 @@ use tokio_tungstenite::{
     tungstenite::{Error, Message, Result},
 };
 
+
+/// Checks connections
+/// 
+/// Makes sure that websocket connection is successful.
 async fn accept_connection(peer: SocketAddr, stream: TcpStream) {
     if let Err(e) = handle_connection(peer, stream).await {
         match e {
@@ -20,6 +24,10 @@ async fn accept_connection(peer: SocketAddr, stream: TcpStream) {
     }
 }
 
+/// Handle websocket connection
+///
+/// Listens for websocket connections from the client. If a new client connects, while they are connected, 
+/// sends the real-time financial data to the client with a frequency of every 10 seconds.
 async fn handle_connection(peer: SocketAddr, stream: TcpStream) -> Result<()> {
     let ws_stream = accept_async(stream).await.expect("Failed to accept");
     info!("New WebSocket connection: {}", peer);

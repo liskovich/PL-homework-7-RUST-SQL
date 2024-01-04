@@ -9,6 +9,10 @@ use shared_db::{
 use sqlx::{Error as SqlxError, PgPool};
 use uuid::Uuid;
 
+/// Add some initial in-game assets
+/// 
+/// When starting the game for the first time, adds all purchasable luxury items (beers), as well as the first oil platform and some initial currency.
+/// Seeds the assets only if the database table of according asset is empty.
 pub async fn seed_game_entities(pool: &PgPool) {
     // seed beers table
     let beer_table_epmty = match sqlx::query_as!(BeerModel, "SELECT * FROM beers")
@@ -175,6 +179,10 @@ pub async fn seed_game_entities(pool: &PgPool) {
 }
 
 // oil platform helpers
+
+/// Get platform purchase cost
+/// 
+/// Based on the provided platform type, returns the purchase cost of the specific platform.
 pub fn get_platform_cost(platform: PlatformType) -> i64 {
     match platform {
         PlatformType::Rig => RIG_PLATFORM_COST,
@@ -183,6 +191,9 @@ pub fn get_platform_cost(platform: PlatformType) -> i64 {
     }
 }
 
+/// Get platform upgrade cost
+/// 
+/// Based on the provided platform type, returns the cost of upgrading the platform to the next level.
 pub fn get_platform_upgrade_cost(platform: PlatformType) -> i64 {
     match platform {
         PlatformType::Rig => RIG_PLATFORM_UPGRADE_COST,
@@ -191,6 +202,9 @@ pub fn get_platform_upgrade_cost(platform: PlatformType) -> i64 {
     }
 }
 
+/// Get platform profitability
+/// 
+/// Based on the provided platform type, returns the profitability of the specific platform.
 pub fn get_platform_profitability(platform: PlatformType) -> i64 {
     match platform {
         PlatformType::Rig => RIG_PLATFORM_PROFITABILITY,

@@ -64,6 +64,7 @@ pub struct GenericResponse {
     pub message: String,
 }
 
+// state variable containing data access repositories
 pub struct AppRepositories {
     pub platform_repo: Box<dyn OilPlaftormRepoTrait>,
     pub beer_repo: Box<dyn BeerRepoTrait>,

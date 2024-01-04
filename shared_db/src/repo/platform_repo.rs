@@ -52,6 +52,10 @@ impl OilPlaftormRepo {
 
 #[async_trait]
 impl OilPlaftormRepoTrait for OilPlaftormRepo {
+    /// Get specific oil platform
+    ///
+    /// Given the unique identifier of a platform, retrieves it from the database 'oil_platforms' table.
+    /// If the platform was not found, returns 'OilPlatformError::NotFound' error.
     async fn get_by_id(&self, id: Uuid) -> Result<OilPlatformModel, OilPlatformError> {
         let query_result = match sqlx::query_as!(
             OilPlatformModel,
@@ -69,6 +73,9 @@ impl OilPlaftormRepoTrait for OilPlaftormRepo {
         Ok(query_result)
     }
 
+    /// Get all oil platforms
+    ///
+    /// Retrieves a list of all platforms from the database 'oil_platforms' table.
     async fn get_all(&self) -> Result<Vec<OilPlatformModel>, OilPlatformError> {
         let query_result = match sqlx::query_as!(
             OilPlatformModel,
@@ -85,6 +92,9 @@ impl OilPlaftormRepoTrait for OilPlaftormRepo {
         Ok(query_result)
     }
 
+    /// Purchase an oil platform
+    ///
+    /// Given the CreatePlatformModel which contains platform type and profitability, saves it to the database 'oil_platforms' table.
     async fn create(
         &self,
         item: CreatePlatformModel,
@@ -105,6 +115,12 @@ impl OilPlaftormRepoTrait for OilPlaftormRepo {
         Ok(query_result)
     }
 
+    /// Upgrade an oil platform
+    ///
+    /// Given the unique identifier of a platform and the UpdatePlatformModel which contains profitability addition to the platform, retrieves it from the database 'oil_platforms' table, 
+    /// checks whether it has not reached the maximum level yet, and if not, modifies platform level and profitability in the database.
+    /// If the platform was not found, returns 'OilPlatformError::NotFound' error.
+    /// If the platform has already reached maximum level, returns 'OilPlatformError::MaxLevelReached' error.
     async fn update(
         &self,
         id: Uuid,

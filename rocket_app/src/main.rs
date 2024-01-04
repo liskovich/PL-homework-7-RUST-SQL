@@ -37,6 +37,10 @@ use ui_handler::{
     },
 };
 
+/// Initialize data access layer
+/// 
+/// Creates new instances of the app database repositories (OilPlatformRepo, BeerRepo and TransactionsRepo) and returns an 
+/// AppRepositories object to be passed as a state variable to web server.
 async fn initialize_repositories(pool: &PgPool) -> AppRepositories {
     let platform_repo = OilPlaftormRepo::new(pool.clone());
     let beer_repo = BeerRepo::new(pool.clone());
@@ -83,7 +87,7 @@ async fn main() -> Result<(), rocket::Error> {
     let repositories = initialize_repositories(&pool).await;
     seed_game_entities(&pool).await;
 
-    // TODO: adjust for production
+    // CORS settings
     let cors = CorsOptions::default()
         .allowed_origins(AllowedOrigins::all())
         .allowed_methods(
