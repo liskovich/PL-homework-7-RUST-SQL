@@ -3,6 +3,10 @@ use rocket::{get, http::Status, patch, response::status::Custom, serde::json::Js
 use shared_db::{model::CreateMoneyTransactionModel, repo::beer_repo::BeerError};
 use uuid::Uuid;
 
+/// Get a list of beers
+///
+/// Retrieves the list of all beers from the database.
+/// Returns them in form of a JSON object.
 #[get("/beers")]
 pub async fn beers_list_handler(
     data: &State<AppRepositories>,
@@ -22,6 +26,11 @@ pub async fn beers_list_handler(
     Ok(Json(json_response))
 }
 
+/// Purchase a beer
+///
+/// Given the identifier of a beer, marks it as purchased in the database.
+/// Additionaly, creates a related money transaction to store purchase information in the database.
+/// In case of success, returns the purchased beer in form of a JSON object. Otherwise, returns error message in form of a JSON object.
 #[patch("/beers/<id>")]
 pub async fn purchase_beer_handler(
     id: String,
