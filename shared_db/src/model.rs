@@ -29,6 +29,7 @@ pub struct UpdatePlatformModel {
 
 #[derive(Clone, Copy, PartialEq, PartialOrd, Debug, Deserialize, Serialize, sqlx::Type)]
 #[sqlx(type_name = "platform_type", rename_all = "lowercase")]
+#[cfg_attr(doc_cfg, doc(cfg(any(feature = "full", feature = "derive"))))]
 pub enum PlatformType {
     Rig,
     Ground,
